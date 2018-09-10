@@ -1,0 +1,21 @@
+{
+  "name": "prid1819-tuto",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "core-js": "2.5.7",
+    "express": "4.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "4.16.0",
+    "@types/node": "10.5.1",
+    "ts-node": "7.0.1",
+    "typescript": "2.9.2"
+  }
+}
