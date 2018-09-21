@@ -1,6 +1,6 @@
 {
   "name": "prid1819-tuto",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "scripts": {
     "start": "nodemon",
@@ -10,10 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "core-js": "2.5.7",
-    "express": "4.16.3"
+    "express": "4.16.3",
+    "mongodb": "3.1.0"
   },
   "devDependencies": {
     "@types/express": "4.16.0",
+    "@types/mongodb": "3.1.1",
     "@types/node": "10.5.1",
     "ts-node": "7.0.1",
     "typescript": "2.9.2"
