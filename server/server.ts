@@ -33,7 +33,7 @@ export class Server {
     private mongoose() {
         (mongoose as any).Promise = global.Promise;     // see: https://stackoverflow.com/a/38833920
         let trials = 0;
-        let connectWithRetry = () => {
+        const connectWithRetry = () => {
             trials++;
             mongoose.connect(MONGO_URL)
                 .then(res => {
@@ -44,8 +44,7 @@ export class Server {
                     if (trials < 3) {
                         console.error('Failed to connect to mongo on startup - retrying in 2 sec');
                         setTimeout(connectWithRetry, 2000);
-                    }
-                    else {
+                    } else {
                         console.error('Failed to connect to mongo after 3 trials ... abort!');
                         process.exit(-1);
                     }
@@ -57,13 +56,13 @@ export class Server {
     private initData() {
         Member.count({}).then(count => {
             if (count === 0) {
-                console.log("Initializing data...");
+                console.log('Initializing data...');
                 Member.insertMany([
-                    { pseudo: "test", password: "test", profile: "Hi, I'm test!" },
-                    { pseudo: "ben", password: "ben", profile: "Hi, I'm ben!" },
-                    { pseudo: "bruno", password: "bruno", profile: "Hi, I'm bruno!" },
-                    { pseudo: "boris", password: "boris", profile: "Hi, I'm boris!" },
-                    { pseudo: "alain", password: "alain", profile: "Hi, I'm alain!" }
+                    { pseudo: 'test', password: 'test', profile: 'Hi, I\'m test!' },
+                    { pseudo: 'ben', password: 'ben', profile: 'Hi, I\'m ben!' },
+                    { pseudo: 'bruno', password: 'bruno', profile: 'Hi, I\'m bruno!' },
+                    { pseudo: 'boris', password: 'boris', profile: 'Hi, I\'m boris!' },
+                    { pseudo: 'alain', password: 'alain', profile: 'Hi, I\'m alain!' }
                 ]);
             }
         });

@@ -14,43 +14,64 @@ export class MembersRouter {
         this.router.delete('/:id', this.deleteOne);
     }
 
-    public getAll(req: Request, res: Response, next: NextFunction) {
-        Member.find().sort({ pseudo: 'asc' })
-            .then(members => res.json(members))
-            .catch(err => res.status(500).send(err));
+    public async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const members = await Member.find().sort({ pseudo: 'asc' });
+            res.json(members);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
-    public getOne(req: Request, res: Response, next: NextFunction) {
-        Member.find({ pseudo: req.params.id })
-            .then(member => res.json(member))
-            .catch(err => res.status(500).send(err));
+    public async getOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const member = await Member.find({ pseudo: req.params.id });
+            res.json(member);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
-    public create(req: Request, res: Response, next: NextFunction) {
-        let member = new Member(req.body);
-        member.save()
-            .then(member => res.json(member))
-            .catch(err => res.status(500).send(err));
+    public async create(req: Request, res: Response, next: NextFunction) {
+        try {
+            const member = new Member(req.body);
+            const newMember = await member.save();
+            res.json(newMember);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
-    public update(req: Request, res: Response, next: NextFunction) {
-        let member = new Member(req.body);
-        Member.findOneAndUpdate({ pseudo: req.params.id },
-            req.body,
-            { new: true })  // pour renvoyer le document modifié
-            .then(member => res.json(member))
-            .catch(err => res.status(500).send(err));
+    public async update(req: Request, res: Response, next: NextFunction) {
+        try {
+            const updatedMember = await Member.findOneAndUpdate({ pseudo: req.params.id },
+                req.body,
+                { new: true });  // pour renvoyer le document modifié
+            res.json(updatedMember);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
-    public deleteOne(req: Request, res: Response, next: NextFunction) {
-        Member.findOneAndRemove({ pseudo: req.params.id })
-            .then(_ => res.json(true))
-            .catch(err => res.status(500).send(err));
+    public async deleteOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const member = await Member.findOneAndRemove({ pseudo: req.params.id });
+            if (member != null) {
+                res.json(true);
+            } else {
+                res.status(404).json(false);
+            }
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
-    public deleteAll(req: Request, res: Response, next: NextFunction) {
-        Member.remove({})
-            .then(_ => res.json(true))
-            .catch(err => res.status(500).send(err));
+    public async deleteAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const r = await Member.remove({});
+            res.json(true);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 }
