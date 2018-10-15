@@ -4,10 +4,12 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { MemberService } from './member.service';
+import { MemberListComponent } from './memberlist.component';
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        MemberListComponent
     ],
     imports: [
         HttpClientModule,
