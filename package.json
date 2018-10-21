@@ -1,6 +1,6 @@
 {
   "name": "prid1819-tuto",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "scripts": {
     "ng": "ng",
@@ -23,10 +23,12 @@
     "@angular/platform-browser": "6.0.3",
     "@angular/platform-browser-dynamic": "6.0.3",
     "@angular/router": "6.0.3",
+    "@auth0/angular-jwt": "2.0.0",
     "bootstrap": "4.1.1",
     "core-js": "2.5.4",
     "express": "4.16.3",
     "jquery": "3.3.1",
+    "jsonwebtoken": "8.3.0",
     "mongodb": "3.1.0",
     "mongoose": "5.2.1",
     "rxjs": "6.0.0",

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { SecuredHttp } from './securedhttp.service';
 
 export class Member {
     _id: string;
@@ -21,12 +22,12 @@ const URL = '/api/members/';
 
 @Injectable()
 export class MemberService {
-    constructor(private http: HttpClient) {
+    constructor(private http: SecuredHttp) {
     }
 
     public getAll(): Observable<Member[]> {
         return this.http.get<Member[]>(URL).pipe(
-            map(res => res.map(m => new Member(m))),
+            // map(res => res),
             catchError(err => {
                 console.error(err);
                 return [];
@@ -36,7 +37,7 @@ export class MemberService {
 
     public getOne(pseudo: string): Observable<Member> {
         return this.http.get<Member[]>(URL + pseudo).pipe(
-            map(res => res.length > 0 ? new Member(res[0]) : null),
+            map(res => res.length > 0 ? res[0] : null),
             catchError(err => {
                 console.error(err);
                 return of(null);
@@ -65,7 +66,6 @@ export class MemberService {
 
     public add(m: Member): Observable<Member> {
         return this.http.post<Member>(URL, m).pipe(
-            map(res => new Member(res)),
             catchError(err => {
                 console.error(err);
                 return of(null);

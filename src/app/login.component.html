@@ -3,3 +3,38 @@
         <h1>Login</h1>
     </div>
 </div>
+<div class="row">
+    <div class="col-sm-10">
+        <form class="form-horizontal" [formGroup]="frm" novalidate>
+            <div class="form-group" [ngClass]="ctlPseudo.pristine ? null : (ctlPseudo.dirty && ctlPseudo.invalid ? 'has-error' : 'has-success')">
+                <div class="col-sm-2">
+                    <label class="control-label" for="pseudo">Pseudo</label>
+                </div>
+                <div class="col-sm-6 help-block">
+                    <input #pseudo id="pseudo" class="form-control" type="text" pTextInput formControlName="pseudo">
+                    <div class="col-sm-12 help-block" *ngIf="ctlPseudo.dirty && ctlPseudo.invalid">
+                        <small *ngIf="ctlPseudo.errors.required">This field is required</small>
+                        <small *ngIf="ctlPseudo.errors.minlength">{{'Minimum length is ' + ctlPseudo.errors.minlength.requiredLength}}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" [ngClass]="ctlPassword.pristine ? null : (ctlPassword.dirty && ctlPassword.invalid ? 'has-error' : 'has-success')">
+                <div class="col-sm-2">
+                    <label class="control-label" for="password">Password</label>
+                </div>
+                <div class="col-sm-6 help-block">
+                    <input id="password" type="password" class="form-control" formControlName="password">
+                    <div class="col-sm-12 help-block" *ngIf="ctlPassword.dirty && ctlPassword.invalid">
+                        <small *ngIf="ctlPassword.errors.required">This field is required</small>
+                        <small *ngIf="ctlPassword.errors.minlength">{{'Minimum length is ' + ctlPassword.errors.minlength.requiredLength}}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button class="btn dtn-default" type="submit" (click)="login()" [disabled]="frm.invalid">Login</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

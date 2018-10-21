@@ -2,8 +2,9 @@ import * as http from 'http';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
-import { MembersRouter } from './routes/members.router';
 import Member from './models/member';
+import { MembersRouter } from './routes/members.router';
+import { AuthentificationRouter } from './routes/authentication.router';
 
 const MONGO_URL = 'mongodb://127.0.0.1/msn';
 
@@ -26,6 +27,8 @@ export class Server {
 
     // initialise les routes
     private routes() {
+        this.express.use('/api/token', new AuthentificationRouter().router);
+        this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
         this.express.use('/api/members', new MembersRouter().router);
     }
 
