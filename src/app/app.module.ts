@@ -6,7 +6,8 @@ import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import {
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
-    MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule
+    MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
+    MatSlideToggleModule, MatDialogModule, MatSnackBarModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
@@ -19,6 +20,7 @@ import { AuthService } from './services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RestrictedComponent } from './components/restricted/restricted.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { EditMemberComponent } from './components/edit-member/edit-member.component';
 import { SetFocusDirective } from './directives/setfocus.directive';
 import { MemberCommonService } from './services/member-common.service';
 import { MemberListComponent } from './components/memberlist/memberlist.component';
@@ -37,8 +39,10 @@ export function tokenGetter() {
         HomeComponent,
         UnknownComponent,
         RestrictedComponent,
+        EditMemberComponent,
         SetFocusDirective,
     ],
+    entryComponents: [EditMemberComponent],
     imports: [
         HttpClientModule,
         BrowserModule,
@@ -47,6 +51,7 @@ export function tokenGetter() {
         ReactiveFormsModule,
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
+        MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },

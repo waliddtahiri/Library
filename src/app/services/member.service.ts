@@ -9,6 +9,7 @@ export class Member {
     pseudo: string;
     password: string;
     profile: string;
+    birthdate: string;
     admin: boolean;
 
     constructor(data) {
@@ -16,6 +17,8 @@ export class Member {
         this.pseudo = data.pseudo;
         this.password = data.password;
         this.profile = data.profile;
+        this.birthdate = data.birthdate &&
+            data.birthdate.length > 10 ? data.birthdate.substring(0, 10) : data.birthdate;
         this.admin = data.admin;
     }
 }

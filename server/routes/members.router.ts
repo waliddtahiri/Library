@@ -33,6 +33,8 @@ export class MembersRouter {
     }
 
     public async create(req: Request, res: Response, next: NextFunction) {
+        // _id vient avec la valeur nulle d'angular (via reactive forms) => on doit l'enlever pour qu'il reçoive une valeur
+        delete req.body._id;
         try {
             const member = new Member(req.body);
             const newMember = await member.save();

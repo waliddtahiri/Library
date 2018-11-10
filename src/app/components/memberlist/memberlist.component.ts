@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Member, MemberService } from '../../services/member.service';
+import { Inject } from '@angular/core';
+import { EditMemberComponent } from '../edit-member/edit-member.component';
+import * as moment from 'moment';
 import * as _ from 'lodash';
 
 @Component({
@@ -9,13 +12,13 @@ import * as _ from 'lodash';
     styleUrls: ['./memberlist.component.css']
 })
 export class MemberListComponent implements OnInit {
-    displayedColumns: string[] = ['pseudo', 'profile', 'admin', 'actions'];
+    displayedColumns: string[] = ['pseudo', 'profile', 'birthdate', 'admin', 'actions'];
     dataSource: MatTableDataSource<Member>;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(private memberService: MemberService) {
+    constructor(private memberService: MemberService, public dialog: MatDialog, public snackBar: MatSnackBar) {
     }
 
     ngOnInit() {
@@ -38,18 +41,35 @@ export class MemberListComponent implements OnInit {
     }
 
     private edit(member: Member) {
-        console.warn('Edit member not implemented', member);
-        alert('Edit member not implemented: ' + member.pseudo);
+        const dlg = this.dialog.open(EditMemberComponent, { data: member });
+        dlg.beforeClose().subscribe(res => {
+            if (res) {
+                _.assign(member, res);
+            }
+        });
     }
 
     private delete(member: Member) {
-        console.warn('Delete member not implemented', member);
-        alert('Delete member not implemented: ' + member.pseudo);
+        const backup = this.dataSource.data;
+        this.dataSource.data = _.filter(this.dataSource.data, m => m._id !== member._id);
+        const snackBarRef = this.snackBar.open(`Member '${member.pseudo}' will be deleted`, 'Undo', { duration: 10000 });
+        snackBarRef.afterDismissed().subscribe(res => {
+            if (!res.dismissedByAction) {
+                this.memberService.delete(member).subscribe();
+            } else {
+                this.dataSource.data = backup;
+            }
+        });
     }
 
     private create() {
-        console.warn('Create member not implemented');
-        alert('Create member not implemented');
+        const member = new Member({});
+        const dlg = this.dialog.open(EditMemberComponent, { data: member });
+        dlg.beforeClose().subscribe(res => {
+            if (res) {
+                this.dataSource.data = [...this.dataSource.data, res];
+            }
+        });
     }
 
 }

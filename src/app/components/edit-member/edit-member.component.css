@@ -1,0 +1,16 @@
+.form .form {
+    margin-top: 15px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.add {
+    height: 40px;
+}
+
+.delete {
+    display: grid;
+    justify-items: center;
+}

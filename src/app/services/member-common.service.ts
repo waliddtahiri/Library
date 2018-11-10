@@ -20,4 +20,14 @@ export class MemberCommonService {
             })
         );
     }
+
+    public getOne(pseudo: string): Observable<Member> {
+        return this.http.get<Member[]>(URL + pseudo).pipe(
+            map(res => res.length > 0 ? new Member(res[0]) : null),
+            catchError(err => {
+                console.error(err);
+                return of(null);
+            })
+        );
+    }
 }
