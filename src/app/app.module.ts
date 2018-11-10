@@ -5,7 +5,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import {
-    MatButtonModule, MatFormFieldModule, MatInputModule
+    MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
+    MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
@@ -44,7 +45,8 @@ export function tokenGetter() {
         BrowserAnimationsModule,
         FormsModule,
         ReactiveFormsModule,
-        MatButtonModule, MatFormFieldModule, MatInputModule,
+        MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
+        MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },
