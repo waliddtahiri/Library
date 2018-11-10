@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { AuthService } from './auth.service';
-import { MemberCommonService } from './member-common.service';
+import { AuthService } from '../../services/auth.service';
+import { MemberCommonService } from '../../services/member-common.service';
 
 @Component({
     templateUrl: 'home.component.html'

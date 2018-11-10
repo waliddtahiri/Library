@@ -8,19 +8,19 @@ import {
     MatButtonModule, MatFormFieldModule, MatInputModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
-import { MemberService } from './member.service';
-import { LoginComponent } from './login.component';
-import { HomeComponent } from './home.component';
-import { UnknownComponent } from './unknown.component';
-import { SecuredHttp } from './securedhttp.service';
-import { AuthGuard, AdminGuard } from './auth-guard.service';
-import { AuthService } from './auth.service';
+import { MemberService } from './services/member.service';
+import { LoginComponent } from './components/login/login.component';
+import { HomeComponent } from './components/home/home.component';
+import { UnknownComponent } from './components/unknown/unknown.component';
+import { SecuredHttp } from './services/securedhttp.service';
+import { AuthGuard, AdminGuard } from './services/auth-guard.service';
+import { AuthService } from './services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RestrictedComponent } from './restricted.component';
-import { LogoutComponent } from './logout.component';
-import { SetFocusDirective } from './setfocus.directive';
-import { MemberCommonService } from './member-common.service';
-import { MemberListComponent } from './memberlist.component';
+import { RestrictedComponent } from './components/restricted/restricted.component';
+import { LogoutComponent } from './components/logout/logout.component';
+import { SetFocusDirective } from './directives/setfocus.directive';
+import { MemberCommonService } from './services/member-common.service';
+import { MemberListComponent } from './components/memberlist/memberlist.component';
 
 export function tokenGetter() {
     return sessionStorage.getItem('id_token');

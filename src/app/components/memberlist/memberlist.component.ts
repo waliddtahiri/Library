@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MemberService, Member } from './member.service';
+import { MemberService, Member } from '../../services/member.service';
 import { Observable, pipe } from 'rxjs';
 import { tap, map, switchMap, flatMap, concatMap, mergeMap, delay,  } from 'rxjs/operators';
 
