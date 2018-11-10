@@ -9,12 +9,14 @@ export class Member {
     pseudo: string;
     password: string;
     profile: string;
+    admin: boolean;
 
     constructor(data) {
         this._id = data._id;
         this.pseudo = data.pseudo;
         this.password = data.password;
         this.profile = data.profile;
+        this.admin = data.admin;
     }
 }
 
@@ -27,20 +29,10 @@ export class MemberService {
 
     public getAll(): Observable<Member[]> {
         return this.http.get<Member[]>(URL).pipe(
-            // map(res => res),
+            map(res => res.map(m => new Member(m))),
             catchError(err => {
                 console.error(err);
                 return [];
-            })
-        );
-    }
-
-    public getOne(pseudo: string): Observable<Member> {
-        return this.http.get<Member[]>(URL + pseudo).pipe(
-            map(res => res.length > 0 ? res[0] : null),
-            catchError(err => {
-                console.error(err);
-                return of(null);
             })
         );
     }
@@ -66,6 +58,7 @@ export class MemberService {
 
     public add(m: Member): Observable<Member> {
         return this.http.post<Member>(URL, m).pipe(
+            map(res => new Member(res)),
             catchError(err => {
                 console.error(err);
                 return of(null);

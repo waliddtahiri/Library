@@ -46,6 +46,7 @@ export class SecuredHttp {
                         sessionStorage.setItem('pseudo', username);
                         sessionStorage.setItem('password', password);
                         sessionStorage.setItem('id_token', token);
+                        sessionStorage.setItem('admin', data.admin);
                         return true;
                     } else {
                         return false;
@@ -64,6 +65,7 @@ export class SecuredHttp {
         sessionStorage.removeItem('pseudo');
         sessionStorage.removeItem('password');
         sessionStorage.removeItem('id_token');
+        sessionStorage.removeItem('admin');
     }
 
     /**

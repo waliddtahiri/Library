@@ -5,6 +5,7 @@ import * as mongoose from 'mongoose';
 import Member from './models/member';
 import { MembersRouter } from './routes/members.router';
 import { AuthentificationRouter } from './routes/authentication.router';
+import { MembersCommonRouter } from './routes/members-common.router';
 
 const MONGO_URL = 'mongodb://127.0.0.1/msn';
 
@@ -29,6 +30,8 @@ export class Server {
     private routes() {
         this.express.use('/api/token', new AuthentificationRouter().router);
         this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
+        this.express.use('/api/members-common', new MembersCommonRouter().router);
+        this.express.use(AuthentificationRouter.checkAdmin);            // à partir d'ici il faut être administrateur
         this.express.use('/api/members', new MembersRouter().router);
     }
 
@@ -67,6 +70,15 @@ export class Server {
                     { pseudo: 'boris', password: 'boris', profile: 'Hi, I\'m boris!' },
                     { pseudo: 'alain', password: 'alain', profile: 'Hi, I\'m alain!' }
                 ]);
+            }
+        });
+        Member.count({ pseudo: 'admin' }).then(count => {
+            if (count === 0) {
+                console.log('Creating admin account...');
+                Member.create({
+                    pseudo: 'admin', password: 'admin',
+                    profile: 'I\'m the administrator of the site!', admin: true
+                });
             }
         });
     }

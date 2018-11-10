@@ -9,17 +9,18 @@ import {
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { MemberService } from './member.service';
-import { MemberListComponent } from './memberlist.component';
 import { LoginComponent } from './login.component';
 import { HomeComponent } from './home.component';
 import { UnknownComponent } from './unknown.component';
 import { SecuredHttp } from './securedhttp.service';
-import { AuthGuard } from './auth-guard.service';
+import { AuthGuard, AdminGuard } from './auth-guard.service';
 import { AuthService } from './auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RestrictedComponent } from './restricted.component';
 import { LogoutComponent } from './logout.component';
 import { SetFocusDirective } from './setfocus.directive';
+import { MemberCommonService } from './member-common.service';
+import { MemberListComponent } from './memberlist.component';
 
 export function tokenGetter() {
     return sessionStorage.getItem('id_token');
@@ -53,7 +54,13 @@ export function tokenGetter() {
                 children: [
                     { path: 'logout', component: LogoutComponent },
                     { path: 'home', component: HomeComponent },
-                    { path: 'members', component: MemberListComponent },
+                    {
+                        path: '',
+                        canActivate: [AdminGuard],
+                        children: [
+                            { path: 'members', component: MemberListComponent },
+                        ]
+                    },
                 ]
             },
             { path: 'restricted', component: RestrictedComponent },
@@ -68,8 +75,10 @@ export function tokenGetter() {
     providers: [
         SecuredHttp,
         AuthGuard,
+        AdminGuard,
         AuthService,
-        MemberService
+        MemberService,
+        MemberCommonService,
     ],
     bootstrap: [AppComponent]
 })

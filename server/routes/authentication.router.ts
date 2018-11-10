@@ -52,6 +52,17 @@ export class AuthentificationRouter {
         }
     }
 
+    public static checkAdmin(req, res, next) {
+        if (req.decoded.admin) {
+            next();
+        } else {
+            return res.status(403).send({
+                success: false,
+                message: 'Require admin privilege.'
+            });
+        }
+    }
+
     /**
      * Cette méthode permet de calculer et de renvoyer au client un jeton
      * JWT. La requête doit être un POST et doit contenir dans son body
@@ -77,8 +88,11 @@ export class AuthentificationRouter {
                 // on vérifie le mot de passe
                 if (member && member['password'] === password) {
                     // si le mot de passe est correct, on génère le token et on le renvoie au client
-                    const token = jwt.sign({ pseudo: req.body.pseudo }, 'my-super-secret-key', { expiresIn: 60 });
-                    res.json({ success: true, message: 'logged in', token: token });
+                    const admin = member['admin'];
+                    const token = jwt.sign({ pseudo: req.body.pseudo, admin: admin },
+                        'my-super-secret-key',
+                        { expiresIn: 60 });
+                    res.json({ success: true, message: 'logged in', token: token, admin: admin });
                 } else {
                     res.json({ success: false, message: 'bad password' });
                 }

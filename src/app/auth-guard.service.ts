@@ -20,7 +20,21 @@ export class AuthGuard implements CanActivate {
         this.authService.redirectUrl = url;
 
         // Navigate to the login page with extras
-        this.router.navigate(['/restricted']);
+        this.router.navigate(['/login']);
         return false;
+    }
+}
+
+@Injectable()
+export class AdminGuard implements CanActivate {
+    constructor(private authService: AuthService, private router: Router) { }
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        if (!this.authService.isAdmin) {
+            this.router.navigate(['/restricted']);
+            return false;
+        } else {
+            return true;
+        }
     }
 }
