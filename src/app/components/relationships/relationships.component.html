@@ -1,0 +1,22 @@
+<div class="container">
+    <ng-container *ngFor="let member of members">
+        <div class="picture">
+            <img [src]="member.picturePath || 'uploads/unknown-user.jpg'" height="40px">
+        </div>
+        <div>{{member.pseudo}}</div>
+        <div [ngSwitch]="getRelationShip(member)">
+            <span *ngSwitchCase="'mutual'">&harr; is a mutual friend
+                <a href="javascript:void(0)" (click)="drop(member)">[drop]</a>
+            </span>
+            <span *ngSwitchCase="'follower'">&rarr; is following you
+                <a href="javascript:void(0)" (click)="follow(member)">[recip]</a>
+            </span>
+            <span *ngSwitchCase="'followee'">&larr; you are following
+                <a href="javascript:void(0)" (click)="drop(member)">[drop]</a>
+            </span>
+            <span *ngSwitchDefault>
+                <a href="javascript:void(0)" (click)="follow(member)">[follow]</a>
+            </span>
+        </div>
+    </ng-container>
+</div>

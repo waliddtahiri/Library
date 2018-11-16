@@ -21,12 +21,56 @@ export class MemberCommonService {
         );
     }
 
+    public getAll(): Observable<Member[]> {
+        return this.http.get<Member[]>(URL).pipe(
+            map(res => res.map(m => new Member(m))),
+            catchError(err => {
+                console.error(err);
+                return [];
+            })
+        );
+    }
+
     public getOne(pseudo: string): Observable<Member> {
         return this.http.get<Member[]>(URL + pseudo).pipe(
             map(res => res.length > 0 ? new Member(res[0]) : null),
             catchError(err => {
                 console.error(err);
                 return of(null);
+            })
+        );
+    }
+
+    public follow(currentUser: string, m: Member): Observable<boolean> {
+        return this.http.post(URL + 'follow', { followee: m.pseudo }).pipe(
+            map(result => {
+                return true;
+            }),
+            catchError(err => {
+                console.error(err);
+                return of(false);
+            })
+        );
+    }
+
+    public unfollow(currentUser: string, m: Member): Observable<boolean> {
+        return this.http.post(URL + 'unfollow', { followee: m.pseudo }).pipe(
+            map(result => {
+                return true;
+            }),
+            catchError(err => {
+                console.error(err);
+                return of(false);
+            })
+        );
+    }
+
+    public update_picture_path(pseudo: string, path: string): Observable<boolean> {
+        return this.http.put<Member>(URL, { picturePath: path }).pipe(
+            map(res => true),
+            catchError(err => {
+                console.error(err);
+                return of(false);
             })
         );
     }

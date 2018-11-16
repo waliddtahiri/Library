@@ -10,6 +10,8 @@ export interface IMember extends mongoose.Document {
     admin: boolean;
     picturePath: string;
     phones: [{type: string, number: string}];
+    followers: mongoose.Types.Array<IMember>;
+    followees: mongoose.Types.Array<IMember>;
 }
 
 const memberSchema = new mongoose.Schema({
@@ -19,7 +21,9 @@ const memberSchema = new mongoose.Schema({
     birthdate: { type: Date },
     admin: { type: Boolean, default: false },
     picturePath: { type: String, default: '' },
-    phones: [{type: {type: String, default: ''}, number: {type: String, default: ''}}]
+    phones: [{type: {type: String, default: ''}, number: {type: String, default: ''}}],
+    followers: [{ type: Schema.Types.ObjectId, ref: 'Member' }],
+    followees: [{ type: Schema.Types.ObjectId, ref: 'Member' }]
 });
 
 const Member = mongoose.model<IMember>('Member', memberSchema);

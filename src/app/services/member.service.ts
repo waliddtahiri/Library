@@ -13,6 +13,8 @@ export class Member {
     admin: boolean;
     picturePath: string;
     phones: [{ type: string, number: string}];
+    followers: Member[];
+    followees: Member[];
 
     constructor(data) {
         this._id = data._id;
@@ -24,6 +26,8 @@ export class Member {
         this.admin = data.admin;
         this.picturePath = data.picturePath;
         this.phones = data.phones;
+        this.followees = data.followees;
+        this.followers = data.followers;
     }
 }
 

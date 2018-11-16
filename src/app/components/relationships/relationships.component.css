@@ -1,0 +1,21 @@
+.container {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    grid-template-columns: fit-content(0) fit-content(0) auto;
+    grid-column-gap: 10px;
+    align-items: center;
+}
+
+.picture {
+    display: grid;
+    align-items: center;
+    justify-self: center;
+    height: 50px;
+}
+
+a {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}

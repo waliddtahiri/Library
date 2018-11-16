@@ -26,7 +26,11 @@ export class MembersCommonRouter {
     constructor() {
         this.router = Router();
         this.router.get('/count', this.getCount);
+        this.router.get('/', this.getAll);
         this.router.get('/:id', this.getOne);
+        this.router.post('/follow', this.follow);
+        this.router.post('/unfollow', this.unfollow);
+        this.router.put('/', this.update);
         this.router.post('/upload', upload.single('picture'), this.upload);
         this.router.post('/confirm', this.confirm);
         this.router.post('/cancel', this.cancel);
@@ -41,10 +45,117 @@ export class MembersCommonRouter {
         }
     }
 
+    public async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const members = await Member.find()
+                .populate('followers followees')
+                .sort({ pseudo: 'asc' });
+            res.json(members);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
     public async getOne(req: Request, res: Response, next: NextFunction) {
         try {
             const member = await Member.find({ pseudo: req.params.id });
             res.json(member);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    public async update(req: Request, res: Response, next: NextFunction) {
+        if (!req.body.hasOwnProperty('picturePath')) {
+            console.error('No picturePath received');
+            return;
+        }
+        try {
+            const currentUser = req['decoded'].pseudo;
+            const updatedMember = await Member.findOneAndUpdate({ pseudo: currentUser },
+                req.body,
+                { new: true });  // pour renvoyer le document modifié
+            res.json(updatedMember);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    // /*
+    //  * follow: version qui utilise les promises explicitement et qui parallélise les queries
+    //  */
+    // public follow(req: Request, res: Response, next: NextFunction) {
+    //     const currentUser = req['decoded'].pseudo;
+    //     Promise.all([
+    //         Member.findOne({ pseudo: currentUser }),
+    //         Member.findOne({ pseudo: req.body.followee })
+    //     ])
+    //         .then(([follower, followee]) => {
+    //             follower.followees.push(followee);
+    //             followee.followers.push(follower);
+    //             return Promise.all([
+    //                 Member.findByIdAndUpdate(followee._id, followee),
+    //                 Member.findByIdAndUpdate(follower._id, follower)
+    //             ]);
+    //         })
+    //         .then(() => res.json(true))
+    //         .catch(err => res.status(500).send(err));
+    // }
+
+    // /*
+    //  * follow: version qui utilise async/await mais qui fait les queries en séquence (moins performant)
+    //  */
+    // public async follow(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const currentUser = req['decoded'].pseudo;
+    //         const follower = await Member.findOne({ pseudo: currentUser });
+    //         const followee = await Member.findOne({ pseudo: req.body.followee });
+    //         follower.followees.push(followee);
+    //         followee.followers.push(follower);
+    //         await Member.findByIdAndUpdate(followee._id, followee);
+    //         await Member.findByIdAndUpdate(follower._id, follower);
+    //         res.json(true);
+    //     } catch (err) {
+    //         res.status(500).send(err);
+    //     }
+    // }
+
+    /*
+     * follow: version qui utilise async/await et qui parallélise les queries
+     */
+    public async follow(req: Request, res: Response, next: NextFunction) {
+        try {
+            const currentUser = req['decoded'].pseudo;
+            const [follower, followee] = await Promise.all([
+                Member.findOne({ pseudo: currentUser }),
+                Member.findOne({ pseudo: req.body.followee })
+            ]);
+            follower.followees.push(followee);
+            followee.followers.push(follower);
+            await Promise.all([
+                Member.findByIdAndUpdate(followee._id, followee),
+                Member.findByIdAndUpdate(follower._id, follower)
+            ]);
+            res.json(true);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    public async unfollow(req: Request, res: Response, next: NextFunction) {
+        try {
+            const currentUser = req['decoded'].pseudo;
+            const [follower, followee] = await Promise.all([
+                Member.findOne({ pseudo: currentUser }),
+                Member.findOne({ pseudo: req.body.followee })
+            ]);
+            follower.followees.remove(followee);
+            followee.followers.remove(follower);
+            await Promise.all([
+                Member.findByIdAndUpdate(followee._id, followee),
+                Member.findByIdAndUpdate(follower._id, follower)
+            ]);
+            res.json(true);
         } catch (err) {
             res.status(500).send(err);
         }

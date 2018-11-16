@@ -23,6 +23,7 @@ import { RestrictedComponent } from './components/restricted/restricted.componen
 import { LogoutComponent } from './components/logout/logout.component';
 import { EditMemberComponent } from './components/edit-member/edit-member.component';
 import { SetFocusDirective } from './directives/setfocus.directive';
+import { RelationshipsComponent } from './components/relationships/relationships.component';
 import { MemberCommonService } from './services/member-common.service';
 import { MemberListComponent } from './components/memberlist/memberlist.component';
 
@@ -42,6 +43,7 @@ export function tokenGetter() {
         RestrictedComponent,
         EditMemberComponent,
         SetFocusDirective,
+        RelationshipsComponent,
     ],
     entryComponents: [EditMemberComponent],
     imports: [
