@@ -16,11 +16,16 @@ import { MemberCommonService } from '../../services/member-common.service';
 })
 export class EditMemberComponent implements OnInit {
     public frm: FormGroup;
+    public frmPhone: FormGroup;
     public ctlPseudo: FormControl;
     public ctlProfile: FormControl;
     public ctlPassword: FormControl;
     public ctlBirthDate: FormControl;
     public ctlAdmin: FormControl;
+    public ctlPhoneType: FormControl;
+    public ctlPhoneNumber: FormControl;
+
+    public phones;
 
     constructor(public dialogRef: MatDialogRef<EditMemberComponent>,
         @Inject(MAT_DIALOG_DATA) public data: Member,
@@ -33,6 +38,8 @@ export class EditMemberComponent implements OnInit {
         this.ctlProfile = this.fb.control('', []);
         this.ctlBirthDate = this.fb.control('', []);
         this.ctlAdmin = this.fb.control(false, []);
+        this.ctlPhoneType = this.fb.control('', []);
+        this.ctlPhoneNumber = this.fb.control('', []);
         this.frm = this.fb.group({
             _id: null,
             pseudo: this.ctlPseudo,
@@ -42,7 +49,13 @@ export class EditMemberComponent implements OnInit {
             admin: this.ctlAdmin
         });
 
+        this.frmPhone = this.fb.group({
+            type: this.ctlPhoneType,
+            number: this.ctlPhoneNumber
+        });
+
         this.frm.patchValue(data);
+        this.phones = _.cloneDeep(data.phones);
     }
 
     // Validateur bidon qui vérifie que la valeur est différente
@@ -75,11 +88,16 @@ export class EditMemberComponent implements OnInit {
         };
     }
 
+    onNoClick(): void {
+        this.dialogRef.close();
+    }
+
     ngOnInit() {
     }
 
     update() {
         const data = this.frm.value;
+        data.phones = this.phones;
         if (data._id === undefined) {
             this.memberService.add(data).subscribe(m => data._id = m._id);
         } else {
@@ -90,5 +108,19 @@ export class EditMemberComponent implements OnInit {
 
     cancel() {
         this.dialogRef.close();
+    }
+
+    phoneAdd() {
+        if (!this.phones) {
+            this.phones = [];
+        }
+        this.phones.push(this.frmPhone.value);
+        this.frmPhone.reset();
+        this.frm.markAsDirty();
+    }
+
+    phoneDelete(phone) {
+        _.remove(this.phones, phone);
+        this.frm.markAsDirty();
     }
 }

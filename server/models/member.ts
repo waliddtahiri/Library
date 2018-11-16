@@ -8,6 +8,7 @@ export interface IMember extends mongoose.Document {
     profile: string;
     birthdate: Date;
     admin: boolean;
+    phones: [{type: string, number: string}];
 }
 
 const memberSchema = new mongoose.Schema({
@@ -15,7 +16,8 @@ const memberSchema = new mongoose.Schema({
     password: { type: String, default: '' },
     profile: { type: String, default: '' },
     birthdate: { type: Date },
-    admin: { type: Boolean, default: false }
+    admin: { type: Boolean, default: false },
+    phones: [{type: {type: String, default: ''}, number: {type: String, default: ''}}]
 });
 
 const Member = mongoose.model<IMember>('Member', memberSchema);

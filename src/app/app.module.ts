@@ -7,7 +7,8 @@ import { JwtModule } from '@auth0/angular-jwt';
 import {
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
     MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
-    MatSlideToggleModule, MatDialogModule, MatSnackBarModule
+    MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
+    MatTabsModule
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
@@ -52,6 +53,7 @@ export function tokenGetter() {
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
         MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
+	MatTabsModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },
