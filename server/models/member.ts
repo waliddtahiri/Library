@@ -8,6 +8,7 @@ export interface IMember extends mongoose.Document {
     profile: string;
     birthdate: Date;
     admin: boolean;
+    picturePath: string;
     phones: [{type: string, number: string}];
 }
 
@@ -17,6 +18,7 @@ const memberSchema = new mongoose.Schema({
     profile: { type: String, default: '' },
     birthdate: { type: Date },
     admin: { type: Boolean, default: false },
+    picturePath: { type: String, default: '' },
     phones: [{type: {type: String, default: ''}, number: {type: String, default: ''}}]
 });
 

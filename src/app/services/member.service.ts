@@ -11,6 +11,7 @@ export class Member {
     profile: string;
     birthdate: string;
     admin: boolean;
+    picturePath: string;
     phones: [{ type: string, number: string}];
 
     constructor(data) {
@@ -21,6 +22,7 @@ export class Member {
         this.birthdate = data.birthdate &&
             data.birthdate.length > 10 ? data.birthdate.substring(0, 10) : data.birthdate;
         this.admin = data.admin;
+        this.picturePath = data.picturePath;
         this.phones = data.phones;
     }
 }

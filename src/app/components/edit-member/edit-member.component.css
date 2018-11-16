@@ -22,3 +22,12 @@
     display: grid;
     justify-items: center;
 }
+
+.picture-container {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: auto;
+    grid-row-gap: 10px;
+    margin: 10px;
+}

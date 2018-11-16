@@ -26,6 +26,8 @@ export class EditMemberComponent implements OnInit {
     public ctlPhoneNumber: FormControl;
 
     public phones;
+    private updateCounter = new Date().getTime();
+    private tempPicturePath: string;
 
     constructor(public dialogRef: MatDialogRef<EditMemberComponent>,
         @Inject(MAT_DIALOG_DATA) public data: Member,
@@ -56,6 +58,7 @@ export class EditMemberComponent implements OnInit {
 
         this.frm.patchValue(data);
         this.phones = _.cloneDeep(data.phones);
+        this.tempPicturePath = data.picturePath;
     }
 
     // Validateur bidon qui vérifie que la valeur est différente
@@ -98,6 +101,10 @@ export class EditMemberComponent implements OnInit {
     update() {
         const data = this.frm.value;
         data.phones = this.phones;
+        if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.pseudo)) {
+            this.memberCommonService.confirmPicture(data.pseudo, this.tempPicturePath).subscribe();
+            data.picturePath = 'uploads/' + data.pseudo;
+        }
         if (data._id === undefined) {
             this.memberService.add(data).subscribe(m => data._id = m._id);
         } else {
@@ -106,7 +113,15 @@ export class EditMemberComponent implements OnInit {
         this.dialogRef.close(data);
     }
 
+    cancelTempPicture() {
+        const data = this.frm.value;
+        if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.pseudo)) {
+            this.memberCommonService.cancelPicture(this.tempPicturePath).subscribe();
+        }
+    }
+
     cancel() {
+        this.cancelTempPicture();
         this.dialogRef.close();
     }
 
@@ -122,5 +137,24 @@ export class EditMemberComponent implements OnInit {
     phoneDelete(phone) {
         _.remove(this.phones, phone);
         this.frm.markAsDirty();
+    }
+
+    fileChange(event) {
+        const fileList: FileList = event.target.files;
+        if (fileList.length > 0) {
+            const file = fileList[0];
+            this.memberCommonService.uploadPicture(this.frm.value.pseudo || 'empty', file).subscribe(path => {
+                this.cancelTempPicture();
+                this.tempPicturePath = path;
+                this.frm.markAsDirty();
+            });
+        }
+    }
+
+    get picturePath(): string {
+        // Le compteur updateCounter sert à générer un URL différent quand on change d'image
+        // car sinon l'image ne se rafraîchit pas parce que l'url ne change pas.
+        return this.tempPicturePath && this.tempPicturePath !== '' ?
+            (this.tempPicturePath + '?' + this.updateCounter) : 'uploads/unknown-user.jpg';
     }
 }

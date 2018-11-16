@@ -2,6 +2,7 @@ import * as http from 'http';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
+import * as path from 'path';
 import Member from './models/member';
 import { MembersRouter } from './routes/members.router';
 import { AuthentificationRouter } from './routes/authentication.router';
@@ -22,6 +23,8 @@ export class Server {
     }
 
     private middleware(): void {
+        const staticRoot = path.resolve(__dirname + '/..');
+        this.express.use(express.static(staticRoot));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false }));
     }
