@@ -16,7 +16,7 @@ export class BooksRouter {
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const books = await Book.find().sort({ isbn: '123' });
+            const books = await Book.find().sort({ isbn: 'asc' });
             res.json(books);
         } catch (err) {
             res.status(500).send(err);
@@ -37,7 +37,7 @@ export class BooksRouter {
         delete req.body._id;
         try {
             const { isbn, author, title, editor } = req.body;
-            const book = new Book(isbn, author, title, editor);
+            const book = new Book (req.body);
             const newBook = await book.save();
             res.json(newBook);
         } catch (err) {

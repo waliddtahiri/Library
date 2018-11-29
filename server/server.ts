@@ -34,11 +34,11 @@ export class Server {
 
     // initialise les routes
     private routes() {
-        //this.express.use('/api/token', new AuthentificationRouter().router);
-        //this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
+        // this.express.use('/api/token', new AuthentificationRouter().router);
+        // this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
         this.express.use('/api/members-common', new MembersCommonRouter().router);
         this.express.use('/api/books', new BooksRouter().router);
-        //this.express.use(AuthentificationRouter.checkAdmin);            // à partir d'ici il faut être administrateur
+        // this.express.use(AuthentificationRouter.checkAdmin);            // à partir d'ici il faut être administrateur
         this.express.use('/api/members', new MembersRouter().router);
     }
 
@@ -76,6 +76,16 @@ export class Server {
                     { pseudo: 'bruno', password: 'bruno', profile: 'Hi, I\'m bruno!' },
                     { pseudo: 'boris', password: 'boris', profile: 'Hi, I\'m boris!' },
                     { pseudo: 'alain', password: 'alain', profile: 'Hi, I\'m alain!' }
+                ]);
+            }
+        });
+        Book.count({}).then(count => {
+            if (count === 0) {
+                console.log('Initializing data...');
+                Book.insertMany([
+                    { isbn: '123', author: 'ben', title: 'Angular for dummies', editor: 'EPFC' },
+                    { isbn: '456', author: 'bru', title: 'TS for dummies', editor: 'EPFC' },
+                    { isbn: '789', author: 'bo', title: 'Java for dummies', editor: 'EPFC' }
                 ]);
             }
         });
