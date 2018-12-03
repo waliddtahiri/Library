@@ -12,6 +12,8 @@ import {
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
+import { BookService } from './services/book.service';
+import { CategoryService } from './services/category.service';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { UnknownComponent } from './components/unknown/unknown.component';
@@ -26,6 +28,10 @@ import { SetFocusDirective } from './directives/setfocus.directive';
 import { RelationshipsComponent } from './components/relationships/relationships.component';
 import { MemberCommonService } from './services/member-common.service';
 import { MemberListComponent } from './components/memberlist/memberlist.component';
+import { BookListComponent } from './components/booklist/booklist.component';
+import { CategoryListComponent } from './components/categorylist/categorylist.component';
+import { EditBookComponent } from './components/edit-book/edit-book.component';
+import { EditCategoryComponent } from './components/edit-category/edit-category.component';
 
 export function tokenGetter() {
     return sessionStorage.getItem('id_token');
@@ -36,16 +42,20 @@ export function tokenGetter() {
     declarations: [
         AppComponent,
         MemberListComponent,
+        BookListComponent,
+        CategoryListComponent,
         LoginComponent,
         LogoutComponent,
         HomeComponent,
         UnknownComponent,
         RestrictedComponent,
         EditMemberComponent,
+        EditBookComponent,
+        EditCategoryComponent,
         SetFocusDirective,
         RelationshipsComponent,
     ],
-    entryComponents: [EditMemberComponent],
+    entryComponents: [EditMemberComponent, EditBookComponent, EditCategoryComponent],
     imports: [
         HttpClientModule,
         BrowserModule,
@@ -54,8 +64,7 @@ export function tokenGetter() {
         ReactiveFormsModule,
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
-        MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
-	MatTabsModule,
+        MatSlideToggleModule, MatDialogModule, MatSnackBarModule, MatTabsModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },
@@ -65,11 +74,13 @@ export function tokenGetter() {
                 children: [
                     { path: 'logout', component: LogoutComponent },
                     { path: 'home', component: HomeComponent },
+                    { path: 'books', component: BookListComponent },
                     {
                         path: '',
                         canActivate: [AdminGuard],
                         children: [
                             { path: 'members', component: MemberListComponent },
+                            { path: 'categories', component: CategoryListComponent },
                         ]
                     },
                 ]
@@ -89,6 +100,8 @@ export function tokenGetter() {
         AdminGuard,
         AuthService,
         MemberService,
+        BookService,
+        CategoryService,
         MemberCommonService,
     ],
     bootstrap: [AppComponent]

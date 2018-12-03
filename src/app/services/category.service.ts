@@ -4,32 +4,26 @@ import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
 
-export class Book {
+export class Category {
     _id: string;
-    isbn: string;
-    author: string;
-    title: string;
-    editor: string;
+    name: string;
 
     constructor(data) {
         this._id = data._id;
-        this.isbn = data.isbn;
-        this.author = data.author;
-        this.title = data.title;
-        this.editor = data.editor;
+        this.name = data.name;
     }
 }
 
-const URL = '/api/books/';
+const URL = '/api/categories/';
 
 @Injectable()
-export class BookService {
+export class CategoryService {
     constructor(private http: SecuredHttp) {
     }
 
-    public getAll(): Observable<Book[]> {
-        return this.http.get<Book[]>(URL).pipe(
-            map(res => res.map(b => new Book(b))),
+    public getAll(): Observable<Category[]> {
+        return this.http.get<Category[]>(URL).pipe(
+            map(res => res.map(b => new Category(b))),
             catchError(err => {
                 console.error(err);
                 return [];
@@ -37,9 +31,9 @@ export class BookService {
         );
     }
 
-    public getOne(isbn: string): Observable<Book> {
-        return this.http.get<Book[]>(URL + isbn).pipe(
-            map(res => res.length > 0 ? new Book(res[0]) : null),
+    public getOne(name: string): Observable<Category> {
+        return this.http.get<Category[]>(URL + name).pipe(
+            map(res => res.length > 0 ? new Category(res[0]) : null),
             catchError(err => {
                 console.error(err);
                 return of(null);
@@ -47,8 +41,8 @@ export class BookService {
         );
     }
 
-    public update(b: Book): Observable<boolean> {
-        return this.http.put<Book>(URL + b.isbn, b).pipe(
+    public update(c: Category): Observable<boolean> {
+        return this.http.put<Category>(URL + c.name, c).pipe(
             map(res => true),
             catchError(err => {
                 console.error(err);
@@ -57,8 +51,8 @@ export class BookService {
         );
     }
 
-    public delete(b: Book): Observable<boolean> {
-        return this.http.delete<boolean>(URL + b.isbn).pipe(
+    public delete(c: Category): Observable<boolean> {
+        return this.http.delete<boolean>(URL + c.name).pipe(
             catchError(err => {
                 console.error(err);
                 return of(false);
@@ -66,9 +60,9 @@ export class BookService {
         );
     }
 
-    public add(b: Book): Observable<Book> {
-        return this.http.post<Book>(URL, b).pipe(
-            map(res => new Book(res)),
+    public add(c: Category): Observable<Category> {
+        return this.http.post<Category>(URL, c).pipe(
+            map(res => new Category(res)),
             catchError(err => {
                 console.error(err);
                 return of(null);

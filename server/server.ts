@@ -5,10 +5,12 @@ import * as mongoose from 'mongoose';
 import * as path from 'path';
 import Member from './models/member';
 import Book from './models/book';
+import Category from './models/category';
 import { MembersRouter } from './routes/members.router';
 import { AuthentificationRouter } from './routes/authentication.router';
 import { MembersCommonRouter } from './routes/members-common.router';
 import { BooksRouter } from './routes/books.router';
+import { CategoriesRouter } from './routes/categories.router';
 
 const MONGO_URL = 'mongodb://127.0.0.1/msn';
 
@@ -34,12 +36,13 @@ export class Server {
 
     // initialise les routes
     private routes() {
-        // this.express.use('/api/token', new AuthentificationRouter().router);
-        // this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
+        this.express.use('/api/token', new AuthentificationRouter().router);
+        this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
         this.express.use('/api/members-common', new MembersCommonRouter().router);
         this.express.use('/api/books', new BooksRouter().router);
-        // this.express.use(AuthentificationRouter.checkAdmin);            // à partir d'ici il faut être administrateur
+        this.express.use(AuthentificationRouter.checkAdmin);            // à partir d'ici il faut être administrateur
         this.express.use('/api/members', new MembersRouter().router);
+        this.express.use('/api/categories', new CategoriesRouter().router);
     }
 
     // initialise mongoose
@@ -86,6 +89,18 @@ export class Server {
                     { isbn: '123', author: 'ben', title: 'Angular for dummies', editor: 'EPFC' },
                     { isbn: '456', author: 'bru', title: 'TS for dummies', editor: 'EPFC' },
                     { isbn: '789', author: 'bo', title: 'Java for dummies', editor: 'EPFC' }
+                ]);
+            }
+        });
+        Category.count({}).then(count => {
+            if (count === 0) {
+                console.log('Initializing data...');
+                Category.insertMany([
+                    { name: 'Informatique' },
+                    { name: 'Science Fiction' },
+                    { name: 'Roman' },
+                    { name: 'Littérature' },
+                    { name: 'Essai' }
                 ]);
             }
         });
