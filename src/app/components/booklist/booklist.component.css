@@ -14,3 +14,7 @@ table {
   th.mat-column-actions {
     width: 110px;
   }
+
+  .actions-column {
+    width: 145px;
+  }

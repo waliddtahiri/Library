@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
+    basketSource : MatTableDataSource<Book>;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -38,6 +39,20 @@ export class BookListComponent implements OnInit {
         if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
         }
+    }
+
+    private add_basket(book: Book) {
+        this.dataSource.data = _.filter(this.dataSource.data, b => b._id !== book._id);
+        this.basketSource = _.filter(this.basketSource, b => b._id !== book._id);
+        this.basketSource.push(book);
+        this.bookService.delete(book).subscribe();
+    }
+
+    private delete_basket(book: Book) {
+        this.basketSource = _.filter(this.basketSource, b => b._id !== book._id);
+        this.dataSource.data = _.filter(this.dataSource.data, b => b._id !== book._id);
+        this.bookService.add(book).subscribe();
+        this.basketSource.delete(book);
     }
 
     private edit(book: Book) {
