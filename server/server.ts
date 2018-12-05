@@ -54,7 +54,6 @@ export class Server {
             mongoose.connect(MONGO_URL)
                 .then(res => {
                     console.log('Connected to MONGODB');
-                    this.initData();
                 })
                 .catch(err => {
                     if (trials < 3) {

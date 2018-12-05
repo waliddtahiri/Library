@@ -1,6 +1,11 @@
 import * as mongoose from 'mongoose';
+import Rental from './rental';
+import {IRental} from './rental';
+import Book from './book';
 
 const Schema = mongoose.Schema;
+const ObjectId = Schema.Types.ObjectId;
+
 
 export interface IMember extends mongoose.Document {
     pseudo: string;
@@ -9,23 +14,28 @@ export interface IMember extends mongoose.Document {
     birthdate: Date;
     admin: boolean;
     picturePath: string;
-    phones: [{type: string, number: string}];
-    followers: mongoose.Types.Array<IMember>;
-    followees: mongoose.Types.Array<IMember>;
+    phones: { type: string, number: string }[];
+    rentals: mongoose.Types.Array<IRental>;
 }
 
-const memberSchema = new mongoose.Schema({
+const memberSchema = new Schema({
     pseudo: { type: String, required: true, unique: true },
     password: { type: String, default: '' },
     profile: { type: String, default: '' },
     birthdate: { type: Date },
     admin: { type: Boolean, default: false },
     picturePath: { type: String, default: '' },
-    phones: [{type: {type: String, default: ''}, number: {type: String, default: ''}}],
-    followers: [{ type: Schema.Types.ObjectId, ref: 'Member' }],
-    followees: [{ type: Schema.Types.ObjectId, ref: 'Member' }]
+    phones: [{ type: { type: String, default: '' }, number: { type: String, default: '' } }],
+    rentals: [{ type: ObjectId, ref: 'Rental' }]
 });
 
-const Member = mongoose.model<IMember>('Member', memberSchema);
+const MemberBase = mongoose.model<IMember>('Member', memberSchema);
 
-export default Member;
+export default class Member extends MemberBase {
+    rent(books: Book[] = []): Rental {
+        const rental = new Rental({ member: this, orderDate: new Date().toLocaleString() });
+        this.rentals.push(rental);
+        books.forEach(b => rental.items.push({ book: b, returnDate: null }));
+        return rental;
+    }
+}
