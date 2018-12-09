@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Book, BookService} from '../../services/book.service';
+import { Rental, RentalService} from '../../services/rental.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
@@ -14,7 +15,7 @@ import * as _ from 'lodash';
 export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
-    basketSource: MatTableDataSource<Book>;
+    basketSource: Book[];
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -43,14 +44,15 @@ export class BookListComponent implements OnInit {
 
     private add_basket(book: Book) {
         this.dataSource.data = _.filter(this.dataSource.data, b => b._id !== book._id);
-        this.basketSource.data = _.filter(this.dataSource.data);
-        this.basketSource.data.push(book);
+        this.basketSource = _.filter(this.basketSource);
+        this.basketSource.push(book);
+        this.bookService.delete(book);
     }
 
     private delete_basket(book: Book) {
-        this.dataSource.data = _.filter(this.basketSource.data, b => b._id === book._id);
-        this.basketSource.data = _.filter(this.basketSource.data);
+        this.basketSource = _.filter(this.basketSource, b => b._id !== book._id);
         this.dataSource.data.push(book);
+        this.dataSource.data = _.filter(this.dataSource.data);
     }
 
     private edit(book: Book) {
