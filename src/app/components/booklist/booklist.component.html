@@ -31,15 +31,17 @@
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef> Actions </th>
                     <td class='actions-column' mat-cell *matCellDef="let row">
-                        <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="edit(row)">edit</mat-icon>
-                        </button>
-                        <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="delete(row)">delete</mat-icon>
-                        </button>
-                        <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="add_basket(row)">arrow_downward</mat-icon>
-                        </button>
+                            <ng-container *ngIf="authService.isAdmin">
+                                    <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="edit(row)">edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="delete(row)">delete</mat-icon>
+                                        </button>
+                                        <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="add_basket(row)">arrow_downward</mat-icon>
+                                        </button>
+                            </ng-container>
                     </td>
                 </ng-container>
 
@@ -87,15 +89,14 @@
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef> Actions </th>
                     <td class='actions-column' mat-cell *matCellDef="let row">
+                            <ng-container *ngIf="authService.isAdmin">
                         <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="edit(row)">edit</mat-icon>
-                        </button>
-                        <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="delete(row)">delete</mat-icon>
+                            <mat-icon (click)="visualise(row)">visualisation</mat-icon>
                         </button>
                         <button mat-icon-button tabindex="-1">
                             <mat-icon (click)="delete_basket(row)">arrow_upward</mat-icon>
                         </button>
+                            </ng-container>
                     </td>
                 </ng-container>
 
@@ -107,3 +108,11 @@
         </div>
     </div>
 </div>
+<div class="row mt-3">
+    <div class="col-12">
+        <button mat-raised-button (click)="confirm_basket()">Confirm Basket</button>
+        &nbsp;&nbsp;
+        <button mat-raised-button (click)="clear_basket()">Clear Basket</button>
+    </div>
+</div>
+<br>

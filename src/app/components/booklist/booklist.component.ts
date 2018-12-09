@@ -5,6 +5,7 @@ import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
 import * as _ from 'lodash';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-booklist-mat',
@@ -14,12 +15,13 @@ import * as _ from 'lodash';
 export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
-    basketSource: MatTableDataSource<Book>;
+    basketSource: Book[];
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(private bookService: BookService, public dialog: MatDialog, public snackBar: MatSnackBar) {
+    constructor(private bookService: BookService, public authService: AuthService,
+         public dialog: MatDialog, public snackBar: MatSnackBar) {
     }
 
     ngOnInit() {
@@ -43,15 +45,26 @@ export class BookListComponent implements OnInit {
 
     private add_basket(book: Book) {
         this.dataSource.data = _.filter(this.dataSource.data, b => b._id !== book._id);
-        this.basketSource.data = _.filter(this.dataSource.data);
-        this.basketSource.data.push(book);
+        this.basketSource = _.filter(this.basketSource);
+        this.basketSource.push(book);
+        this.bookService.delete(book);
     }
 
     private delete_basket(book: Book) {
-        this.dataSource.data = _.filter(this.basketSource.data, b => b._id === book._id);
-        this.basketSource.data = _.filter(this.basketSource.data);
+        this.dataSource.data = _.filter(this.basketSource, b => b._id === book._id);
+        this.basketSource = _.filter(this.basketSource);
         this.dataSource.data.push(book);
     }
+
+    private confirm_basket() {
+        this.clear_basket();
+    }
+
+    private clear_basket() {
+        this.ngOnInit();
+        this.basketSource =  _.filter(this.basketSource.splice(this.basketSource.length));
+    }
+
 
     private edit(book: Book) {
         const dlg = this.dialog.open(EditBookComponent, { data: book });
