@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Book, BookService} from '../../services/book.service';
+import { Rental, RentalService} from '../../services/rental.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
@@ -51,9 +52,14 @@ export class BookListComponent implements OnInit {
     }
 
     private delete_basket(book: Book) {
+<<<<<<< HEAD
         this.dataSource.data = _.filter(this.basketSource, b => b._id === book._id);
         this.basketSource = _.filter(this.basketSource);
+=======
+        this.basketSource = _.filter(this.basketSource, b => b._id !== book._id);
+>>>>>>> 37ced74715334c87ac890e87982f59db82819f78
         this.dataSource.data.push(book);
+        this.dataSource.data = _.filter(this.dataSource.data);
     }
 
     private confirm_basket() {
