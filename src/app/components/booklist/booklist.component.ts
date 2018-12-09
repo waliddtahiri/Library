@@ -54,6 +54,7 @@ export class BookListComponent implements OnInit {
         this.dataSource.data = _.filter(this.basketSource, b => b._id === book._id);
         this.basketSource = _.filter(this.basketSource);
         this.dataSource.data.push(book);
+        this.dataSource.data = _.filter(this.dataSource.data);
     }
 
     private confirm_basket() {
