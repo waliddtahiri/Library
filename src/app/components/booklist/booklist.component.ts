@@ -6,6 +6,8 @@ import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
 import * as _ from 'lodash';
 import { AuthService } from '../../services/auth.service';
+import Rental from 'server/models/rental';
+import Member from 'server/models/member';
 
 @Component({
     selector: 'app-booklist-mat',
@@ -16,6 +18,8 @@ export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
     basketSource: Book[];
+    rentals: Rental[];
+    current: Member;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -51,13 +55,20 @@ export class BookListComponent implements OnInit {
     }
 
     private delete_basket(book: Book) {
-        this.dataSource.data = _.filter(this.basketSource, b => b._id === book._id);
-        this.basketSource = _.filter(this.basketSource);
+        this.basketSource = _.filter(this.basketSource, b => b._id !== book._id);
         this.dataSource.data.push(book);
         this.dataSource.data = _.filter(this.dataSource.data);
     }
 
+    /* private rent(books: Book[] = []): Rental {
+        const rental = new Rental({ member: this, orderDate: new Date().toLocaleString() });
+        this.rentals.push(rental);
+        books.forEach(b => rental.items.push({ book: b, returnDate: null }));
+        return rental;
+    } */
+
     private confirm_basket() {
+        // this.rent(this.basketSource);
         this.clear_basket();
     }
 

@@ -3,6 +3,7 @@ import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
+import Category from 'server/models/category';
 
 export class Book {
     _id: string;
@@ -10,6 +11,8 @@ export class Book {
     author: string;
     title: string;
     editor: string;
+    picturePath: string;
+    categories: Category[];
 
     constructor(data) {
         this._id = data._id;
@@ -17,6 +20,8 @@ export class Book {
         this.author = data.author;
         this.title = data.title;
         this.editor = data.editor;
+        this.picturePath = data.picturePath;
+        this.categories = data.categories;
     }
 }
 

@@ -3,6 +3,8 @@ import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
+import Rental from 'server/models/rental';
+import Book from 'server/models/book';
 
 export class Member {
     _id: string;
@@ -13,8 +15,7 @@ export class Member {
     admin: boolean;
     picturePath: string;
     phones: [{ type: string, number: string}];
-    followers: Member[];
-    followees: Member[];
+    rentals: Rental[];
 
     constructor(data) {
         this._id = data._id;
@@ -26,8 +27,7 @@ export class Member {
         this.admin = data.admin;
         this.picturePath = data.picturePath;
         this.phones = data.phones;
-        this.followees = data.followees;
-        this.followers = data.followers;
+        this.rentals = data.rentals;
     }
 }
 
@@ -73,6 +73,18 @@ export class MemberService {
             catchError(err => {
                 console.error(err);
                 return of(null);
+            })
+        );
+    }
+
+    public rent(currentUser: Member, r: Rental): Observable<boolean> {
+        return this.http.post(URL + 'rent', { rentals: r }).pipe(
+            map(result => {
+                return true;
+            }),
+            catchError(err => {
+                console.error(err);
+                return of(false);
             })
         );
     }

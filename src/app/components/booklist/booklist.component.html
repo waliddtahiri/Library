@@ -42,6 +42,14 @@
                                             <mat-icon (click)="add_basket(row)">arrow_downward</mat-icon>
                                         </button>
                             </ng-container>
+                            <ng-container *ngIf="!authService.isAdmin">
+                                    <button mat-icon-button tabindex="-1">
+                                        <mat-icon (click)="visualize(row)">visibility</mat-icon>
+                                    </button>
+                                    <button mat-icon-button tabindex="-1">
+                                        <mat-icon (click)="add_basket(row)">arrow_downward</mat-icon>
+                                    </button>
+                            </ng-container>
                     </td>
                 </ng-container>
 
@@ -90,12 +98,23 @@
                     <th mat-header-cell *matHeaderCellDef> Actions </th>
                     <td class='actions-column' mat-cell *matCellDef="let row">
                             <ng-container *ngIf="authService.isAdmin">
-                        <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="visualise(row)">visualisation</mat-icon>
-                        </button>
-                        <button mat-icon-button tabindex="-1">
-                            <mat-icon (click)="delete_basket(row)">arrow_upward</mat-icon>
-                        </button>
+                                    <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="edit(row)">edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="delete(row)">delete</mat-icon>
+                                        </button>
+                                        <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="delete_basket(row)">arrow_upward</mat-icon>
+                                        </button>
+                            </ng-container>
+                            <ng-container *ngIf="!authService.isAdmin">
+                                        <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="visualize(row)">visibility</mat-icon>
+                                        </button>
+                                        <button mat-icon-button tabindex="-1">
+                                            <mat-icon (click)="delete_basket(row)">arrow_upward</mat-icon>
+                                        </button>
                             </ng-container>
                     </td>
                 </ng-container>
