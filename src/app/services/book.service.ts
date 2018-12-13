@@ -3,7 +3,8 @@ import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
-import Category from 'server/models/category';
+import {Category} from 'src/app/services/category.service';
+
 
 export class Book {
     _id: string;
@@ -22,6 +23,17 @@ export class Book {
         this.editor = data.editor;
         this.picturePath = data.picturePath;
         this.categories = data.categories;
+    }
+
+    public addCategories(...args: Category[]): void {
+        for (const b of args) {
+            if (!this.categories.includes(b)) {
+                this.categories.push(b);
+            }
+            if (!b.books.includes(this)) {
+                b.books.push(this);
+            }
+        }
     }
 }
 

@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Book, BookService} from '../../services/book.service';
+import { Member, MemberService} from '../../services/member.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
 import * as _ from 'lodash';
 import { AuthService } from '../../services/auth.service';
 import Rental from 'server/models/rental';
-import Member from 'server/models/member';
+
 
 @Component({
     selector: 'app-booklist-mat',
@@ -19,13 +20,15 @@ export class BookListComponent implements OnInit {
     dataSource: MatTableDataSource<Book>;
     basketSource: Book[];
     rentals: Rental[];
-    current: Member;
+    public current: Member;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(private bookService: BookService, public authService: AuthService,
+    constructor(private bookService: BookService, public memberService: MemberService,
+         public authService: AuthService,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
+            this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
     }
 
     ngOnInit() {
@@ -60,16 +63,12 @@ export class BookListComponent implements OnInit {
         this.dataSource.data = _.filter(this.dataSource.data);
     }
 
-    /* private rent(books: Book[] = []): Rental {
-        const rental = new Rental({ member: this, orderDate: new Date().toLocaleString() });
-        this.rentals.push(rental);
-        books.forEach(b => rental.items.push({ book: b, returnDate: null }));
-        return rental;
-    } */
-
     private confirm_basket() {
-        // this.rent(this.basketSource);
-        this.clear_basket();
+        if (this.basketSource.length > 0) {
+            const books = this.basketSource;
+            this.clear_basket();
+            this.current.rent(books);
+        }
     }
 
     private clear_basket() {

@@ -3,14 +3,14 @@ import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
-import {IMember} from 'server/models/member';
-import {IBook} from 'server/models/book';
+import {Member} from 'src/app/services/member.service';
+import {Book} from 'src/app/services/book.service';
 
 export class Rental {
     _id: string;
     orderDate: string;
-    member: IMember;
-    items: { book: IBook, returnDate: string }[];
+    member: Member;
+    items: { book: Book, returnDate: string }[];
 
     constructor(data) {
         this._id = data._id;

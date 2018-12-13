@@ -3,8 +3,8 @@ import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
-import Rental from 'server/models/rental';
-import Book from 'server/models/book';
+import {Rental} from 'src/app/services/rental.service';
+import {Book} from 'src/app/services/book.service';
 
 export class Member {
     _id: string;
@@ -29,6 +29,13 @@ export class Member {
         this.phones = data.phones;
         this.rentals = data.rentals;
     }
+
+    public rent(books: Book[] = []): Rental {
+        const rental = new Rental({ member: this, orderDate: new Date().toLocaleString() });
+        this.rentals.push(rental);
+        books.forEach(b => rental.items.push({ book: b, returnDate: null }));
+        return rental;
+    }
 }
 
 const URL = '/api/members/';
@@ -44,6 +51,16 @@ export class MemberService {
             catchError(err => {
                 console.error(err);
                 return [];
+            })
+        );
+    }
+
+    public getOne(pseudo: string): Observable<Member> {
+        return this.http.get<Member[]>(URL + pseudo).pipe(
+            map(res => res.length > 0 ? new Member(res[0]) : null),
+            catchError(err => {
+                console.error(err);
+                return of(null);
             })
         );
     }
@@ -73,18 +90,6 @@ export class MemberService {
             catchError(err => {
                 console.error(err);
                 return of(null);
-            })
-        );
-    }
-
-    public rent(currentUser: Member, r: Rental): Observable<boolean> {
-        return this.http.post(URL + 'rent', { rentals: r }).pipe(
-            map(result => {
-                return true;
-            }),
-            catchError(err => {
-                console.error(err);
-                return of(false);
             })
         );
     }

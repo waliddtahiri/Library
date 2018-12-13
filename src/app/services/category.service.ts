@@ -3,14 +3,17 @@ import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
+import {Book} from 'src/app/services/book.service';
 
 export class Category {
     _id: string;
     name: string;
+    books: Book[];
 
     constructor(data) {
         this._id = data._id;
         this.name = data.name;
+        this.books = data.books;
     }
 }
 
