@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import Member from '../models/member';
+import Rental from '../models/rental';
 
 export class MembersRouter {
     public router: Router;
@@ -71,6 +72,23 @@ export class MembersRouter {
     public async deleteAll(req: Request, res: Response, next: NextFunction) {
         try {
             const r = await Member.remove({});
+            res.json(true);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    public async rent(req: Request, res: Response, next: NextFunction) {
+        try {
+            const currentUser = req['decoded'].pseudo;
+            const rental = new Rental({ member: currentUser, orderDate: new Date().toLocaleString() });
+            currentUser.rentals.push(rental);
+            const newRental = await rental.save();
+            res.json(newRental);
+            await Promise.all([
+                Member.findByIdAndUpdate(currentUser._id, currentUser),
+                await currentUser.save()
+            ]);
             res.json(true);
         } catch (err) {
             res.status(500).send(err);

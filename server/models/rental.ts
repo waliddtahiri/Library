@@ -14,7 +14,7 @@ export interface IRental extends mongoose.Document {
 }
 
 const rentalSchema = new Schema({
-    orderDate: { type: String, required: true },
+    orderDate: { type: String },
     member: { type: ObjectId, ref: 'Member' },
     items: [{ book: { type: ObjectId, ref: 'Book' }, returnDate: { type: String } }],
 });

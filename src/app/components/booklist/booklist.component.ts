@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Book, BookService} from '../../services/book.service';
-import { Member, MemberService} from '../../services/member.service';
+import { Member,  MemberService} from '../../services/member.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
@@ -64,11 +64,15 @@ export class BookListComponent implements OnInit {
     }
 
     private confirm_basket() {
+        const books = this.basketSource;
         if (this.basketSource.length > 0) {
-            const books = this.basketSource;
-            this.clear_basket();
             this.current.rent(books);
+            this.memberService
+            .rent(this.authService.currentUser, books)
+            .subscribe(res => this.refresh());
+            this.clear_basket();
         }
+        this.clear_basket();
     }
 
     private clear_basket() {

@@ -5,6 +5,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { SecuredHttp } from './securedhttp.service';
 import {Rental} from 'src/app/services/rental.service';
 import {Book} from 'src/app/services/book.service';
+import { Http, RequestOptions } from '@angular/http';
 
 export class Member {
     _id: string;
@@ -90,6 +91,18 @@ export class MemberService {
             catchError(err => {
                 console.error(err);
                 return of(null);
+            })
+        );
+    }
+
+    public rent(currentUser: string, b: Book[] = []): Observable<boolean> {
+        return this.http.post(URL + 'rent', { rentals: b }).pipe(
+            map(result => {
+                return true;
+            }),
+            catchError(err => {
+                console.error(err);
+                return of(false);
             })
         );
     }
