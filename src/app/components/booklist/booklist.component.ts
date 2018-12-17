@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
 import * as _ from 'lodash';
 import { AuthService } from '../../services/auth.service';
-import Rental from 'server/models/rental';
+import {Rental, RentalService} from '../../services/rental.service';
 
 
 @Component({
@@ -19,16 +19,16 @@ export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
     basketSource: Book[];
-    rentals: Rental[];
     public current: Member;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(private bookService: BookService, public memberService: MemberService,
+    constructor(private bookService: BookService, public rentalService: RentalService,
+         public memberService: MemberService,
          public authService: AuthService,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
-            this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
+         this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
     }
 
     ngOnInit() {
@@ -65,14 +65,16 @@ export class BookListComponent implements OnInit {
 
     private confirm_basket() {
         const books = this.basketSource;
+        const items = [];
         if (this.basketSource.length > 0) {
-            this.current.rent(books);
-            this.memberService
-            .rent(this.authService.currentUser, books)
-            .subscribe(res => this.refresh());
-            this.clear_basket();
-        }
+        const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
+        books.forEach(b => items.push({ book: b, returnDate: null }));
+        rental.items = items;
+        this.rentalService.add(rental).subscribe(res => console.log(res));
+        this.current.rentals.push(rental);
+        this.memberService.update(this.current);
         this.clear_basket();
+        }
     }
 
     private clear_basket() {

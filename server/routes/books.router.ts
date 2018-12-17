@@ -9,9 +9,9 @@ export class BooksRouter {
         this.router.get('/', this.getAll);
         this.router.post('/', this.create);
         this.router.delete('/', this.deleteAll);
-        this.router.get('/:isbn', this.getOne);
-        this.router.put('/:isbn', this.update);
-        this.router.delete('/:isbn', this.deleteOne);
+        this.router.get('/:id', this.getOne);
+        this.router.put('/:id', this.update);
+        this.router.delete('/:id', this.deleteOne);
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {

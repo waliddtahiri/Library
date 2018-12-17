@@ -13,6 +13,7 @@ import {
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
 import { BookService } from './services/book.service';
+import { RentalService } from './services/rental.service';
 import { CategoryService } from './services/category.service';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
@@ -101,6 +102,7 @@ export function tokenGetter() {
         BookService,
         CategoryService,
         MemberCommonService,
+        RentalService,
     ],
     bootstrap: [AppComponent]
 })

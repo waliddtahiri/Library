@@ -11,6 +11,7 @@ import { AuthentificationRouter } from './routes/authentication.router';
 import { MembersCommonRouter } from './routes/members-common.router';
 import { BooksRouter } from './routes/books.router';
 import { CategoriesRouter } from './routes/categories.router';
+import { RentalRouter } from './routes/rental.router';
 
 const MONGO_URL = 'mongodb://127.0.0.1/msn';
 
@@ -42,6 +43,7 @@ export class Server {
         this.express.use('/api/books', new BooksRouter().router);
         this.express.use(AuthentificationRouter.checkAdmin);            // à partir d'ici il faut être administrateur
         this.express.use('/api/members', new MembersRouter().router);
+        this.express.use('/api/rentals', new RentalRouter().router);
         this.express.use('/api/categories', new CategoriesRouter().router);
     }
 

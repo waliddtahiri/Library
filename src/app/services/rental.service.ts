@@ -57,6 +57,7 @@ export class RentalService {
     }
 
     public add(r: Rental): Observable<Rental> {
+        console.log('ddd');
         return this.http.post<Rental>(URL, r).pipe(
             map(res => new Rental(res)),
             catchError(err => {
