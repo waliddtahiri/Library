@@ -66,13 +66,16 @@ export class BookListComponent implements OnInit {
     private confirm_basket() {
         const books = this.basketSource;
         const items = [];
+        const rentals = [];
         if (this.basketSource.length > 0) {
         const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
         books.forEach(b => items.push({ book: b, returnDate: null }));
         rental.items = items;
-        this.rentalService.add(rental).subscribe(res => console.log(res));
-        this.current.rentals.push(rental);
-        this.memberService.update(this.current);
+        this.rentalService.add(rental).subscribe(res => {
+            this.current.rentals = rentals;
+            this.current.rentals.push(res);
+            this.memberService.update(this.current).subscribe();
+        });
         this.clear_basket();
         }
     }
