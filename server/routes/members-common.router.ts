@@ -32,6 +32,7 @@ export class MembersCommonRouter {
         this.router.post('/upload', upload.single('picture'), this.upload);
         this.router.post('/confirm', this.confirm);
         this.router.post('/cancel', this.cancel);
+        this.router.put('/:id', this.updateMember);
     }
 
     public async getCount(req: Request, res: Response, next: NextFunction) {
@@ -58,6 +59,17 @@ export class MembersCommonRouter {
         try {
             const member = await Member.find({ pseudo: req.params.id });
             res.json(member);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    public async updateMember(req: Request, res: Response, next: NextFunction) {
+        try {
+            const updatedMember = await Member.findOneAndUpdate({ pseudo: req.params.id },
+                req.body,
+                { new: true });  // pour renvoyer le document modifié
+            res.json(updatedMember);
         } catch (err) {
             res.status(500).send(err);
         }

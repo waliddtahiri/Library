@@ -4,6 +4,7 @@ import { map, catchError } from 'rxjs/operators';
 import { Http, RequestOptions } from '@angular/http';
 import { SecuredHttp } from './securedhttp.service';
 import { Member } from './member.service';
+import {Book} from 'src/app/services/book.service';
 
 const URL = '/api/members-common/';
 
@@ -41,23 +42,9 @@ export class MemberCommonService {
         );
     }
 
-    public follow(currentUser: string, m: Member): Observable<boolean> {
-        return this.http.post(URL + 'follow', { followee: m.pseudo }).pipe(
-            map(result => {
-                return true;
-            }),
-            catchError(err => {
-                console.error(err);
-                return of(false);
-            })
-        );
-    }
-
-    public unfollow(currentUser: string, m: Member): Observable<boolean> {
-        return this.http.post(URL + 'unfollow', { followee: m.pseudo }).pipe(
-            map(result => {
-                return true;
-            }),
+    public update(m: Member): Observable<boolean> {
+        return this.http.put<Member>(URL + m.pseudo, m).pipe(
+            map(res => true),
             catchError(err => {
                 console.error(err);
                 return of(false);
@@ -102,6 +89,18 @@ export class MemberCommonService {
             catchError(err => {
                 console.error(err);
                 return of(null);
+            })
+        );
+    }
+
+    public rent(currentUser: string, b: Book[] = []): Observable<boolean> {
+        return this.http.post(URL + 'rent', { rentals: b }).pipe(
+            map(result => {
+                return true;
+            }),
+            catchError(err => {
+                console.error(err);
+                return of(false);
             })
         );
     }

@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Book, BookService} from '../../services/book.service';
-import { Member,  MemberService} from '../../services/member.service';
+import { MemberCommonService} from '../../services/member-common.service';
+import { Member } from '../../services/member.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
@@ -25,7 +26,7 @@ export class BookListComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
 
     constructor(private bookService: BookService, public rentalService: RentalService,
-         public memberService: MemberService,
+         public memberService: MemberCommonService,
          public authService: AuthService,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
          this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
@@ -66,13 +67,11 @@ export class BookListComponent implements OnInit {
     private confirm_basket() {
         const books = this.basketSource;
         const items = [];
-        const rentals = [];
         if (this.basketSource.length > 0) {
         const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
         books.forEach(b => items.push({ book: b, returnDate: null }));
         rental.items = items;
         this.rentalService.add(rental).subscribe(res => {
-            this.current.rentals = rentals;
             this.current.rentals.push(res);
             this.memberService.update(this.current).subscribe();
         });
