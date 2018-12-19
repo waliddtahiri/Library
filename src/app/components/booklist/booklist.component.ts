@@ -9,6 +9,7 @@ import { EditBookComponent } from '../edit-book/edit-book.component';
 import * as _ from 'lodash';
 import { AuthService } from '../../services/auth.service';
 import {Rental, RentalService} from '../../services/rental.service';
+import { FormBuilder } from '@angular/forms';
 
 
 @Component({
@@ -19,6 +20,7 @@ import {Rental, RentalService} from '../../services/rental.service';
 export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
+    selectedMember: Member;
     basketSource: Book[];
     membersSource: Member[] = [];
     public current: Member;
@@ -28,7 +30,7 @@ export class BookListComponent implements OnInit {
 
     constructor(private bookService: BookService, public rentalService: RentalService,
          public memberService: MemberCommonService,
-         public authService: AuthService,
+         public authService: AuthService, private fb: FormBuilder,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
          this.memberService.getAll().subscribe(members => {
               members.forEach(m => {
@@ -59,11 +61,20 @@ export class BookListComponent implements OnInit {
         }
     }
 
+    isEmpty(b: Book[] = []): Boolean {
+        return b.length === 0;
+    }
+
+    isMemberSelected (m: Member): Boolean {
+        return m === undefined;
+    }
+
     private add_basket(book: Book) {
         this.dataSource.data = _.filter(this.dataSource.data, b => b._id !== book._id);
         this.basketSource = _.filter(this.basketSource);
         this.basketSource.push(book);
         this.bookService.delete(book);
+        console.log(this.basketSource.length);
     }
 
     private delete_basket(book: Book) {
@@ -75,11 +86,15 @@ export class BookListComponent implements OnInit {
     private confirm_basket() {
         const books = this.basketSource;
         const items = [];
+        const rentals = [];
         if (this.basketSource.length > 0) {
         const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
         books.forEach(b => items.push({ book: b, returnDate: null }));
         rental.items = items;
         this.rentalService.add(rental).subscribe(res => {
+            if (this.current.rentals.length === 0) {
+                this.current.rentals = rentals;
+            }
             this.current.rentals.push(res);
             this.memberService.update(this.current).subscribe();
         });
@@ -90,13 +105,17 @@ export class BookListComponent implements OnInit {
     private confirm_basket_admin() {
         const books = this.basketSource;
         const items = [];
+        const rentals = [];
         if (this.basketSource.length > 0) {
-        const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
+        const rental = new Rental({ member: this.selectedMember, orderDate: new Date().toLocaleString()});
         books.forEach(b => items.push({ book: b, returnDate: null }));
         rental.items = items;
         this.rentalService.add(rental).subscribe(res => {
-            this.current.rentals.push(res);
-            this.memberService.update(this.current).subscribe();
+            if (this.current.rentals.length === 0) {
+                this.current.rentals = rentals;
+            }
+            this.selectedMember.rentals.push(res);
+            this.memberService.update(this.selectedMember).subscribe();
         });
         this.clear_basket();
         }
@@ -138,6 +157,10 @@ export class BookListComponent implements OnInit {
                 this.dataSource.data = [...this.dataSource.data, res];
             }
         });
+    }
+
+    onMemberSelected (val: any) {
+          this.selectedMember = val;
     }
 
 }
