@@ -129,9 +129,22 @@
 </div>
 <div class="row mt-3">
     <div class="col-12">
-        <button mat-raised-button (click)="confirm_basket()">Confirm Basket</button>
-        &nbsp;&nbsp;
-        <button mat-raised-button (click)="clear_basket()">Clear Basket</button>
+        <ng-container *ngIf="authService.isAdmin">
+                <mat-form-field class="box">
+                        <mat-select placeholder="This basket is for">
+                            <mat-option *ngFor="let Member of membersSource" [value]="Member">{{Member.pseudo}}</mat-option>
+                        </mat-select>
+                </mat-form-field>
+                &nbsp;&nbsp;
+                <button mat-raised-button (click)="confirm_basket_admin()">Confirm Basket</button>
+                &nbsp;&nbsp;
+                <button mat-raised-button (click)="clear_basket()">Clear Basket</button>
+        </ng-container>
+        <ng-container *ngIf="!authService.isAdmin">
+                <button mat-raised-button (click)="confirm_basket()">Confirm Basket</button>
+                &nbsp;&nbsp;
+                <button mat-raised-button (click)="clear_basket()">Clear Basket</button>
+        </ng-container>
     </div>
 </div>
 <br>

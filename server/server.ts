@@ -40,10 +40,11 @@ export class Server {
         this.express.use('/api/token', new AuthentificationRouter().router);
         this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
         this.express.use('/api/members-common', new MembersCommonRouter().router);
+        this.express.use('/api/members', new MembersRouter().router);
         this.express.use('/api/books', new BooksRouter().router);
         this.express.use('/api/rentals', new RentalRouter().router);
         this.express.use(AuthentificationRouter.checkAdmin);
-        this.express.use('/api/members', new MembersRouter().router);           // à partir d'ici il faut être administrateur
+                   // à partir d'ici il faut être administrateur
         this.express.use('/api/categories', new CategoriesRouter().router);
     }
 

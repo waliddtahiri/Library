@@ -20,6 +20,7 @@ export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
     basketSource: Book[];
+    membersSource: Member[] = [];
     public current: Member;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -29,6 +30,13 @@ export class BookListComponent implements OnInit {
          public memberService: MemberCommonService,
          public authService: AuthService,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
+         this.memberService.getAll().subscribe(members => {
+              members.forEach(m => {
+                if (m.admin === false) {
+                this.membersSource.push(m);
+                }
+              });
+         });
          this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
     }
 
@@ -65,6 +73,21 @@ export class BookListComponent implements OnInit {
     }
 
     private confirm_basket() {
+        const books = this.basketSource;
+        const items = [];
+        if (this.basketSource.length > 0) {
+        const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
+        books.forEach(b => items.push({ book: b, returnDate: null }));
+        rental.items = items;
+        this.rentalService.add(rental).subscribe(res => {
+            this.current.rentals.push(res);
+            this.memberService.update(this.current).subscribe();
+        });
+        this.clear_basket();
+        }
+    }
+
+    private confirm_basket_admin() {
         const books = this.basketSource;
         const items = [];
         if (this.basketSource.length > 0) {

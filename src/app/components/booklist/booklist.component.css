@@ -18,3 +18,7 @@ table {
   .actions-column {
     width: 145px;
   }
+
+  .box {
+    width: 135px;
+  }
