@@ -3,6 +3,7 @@ import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, 
 import { Book, BookService} from '../../services/book.service';
 import { MemberCommonService} from '../../services/member-common.service';
 import { Member } from '../../services/member.service';
+import { Category, CategoryService } from '../../services/category.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
 import { EditBookComponent } from '../edit-book/edit-book.component';
@@ -23,6 +24,7 @@ export class BookListComponent implements OnInit {
     selectedMember: Member;
     basketSource: Book[];
     membersSource: Member[] = [];
+    categoriesSource: Category[] = [];
     public current: Member;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -30,6 +32,7 @@ export class BookListComponent implements OnInit {
 
     constructor(private bookService: BookService, public rentalService: RentalService,
          public memberService: MemberCommonService,
+         public categoryService: CategoryService,
          public authService: AuthService, private fb: FormBuilder,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
          this.memberService.getAll().subscribe(members => {
@@ -40,7 +43,13 @@ export class BookListComponent implements OnInit {
               });
          });
          this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
-    }
+
+         this.categoryService.getAll().subscribe(categories => {
+            categories.forEach(c => {
+              this.categoriesSource.push(c);
+            });
+       });
+        }
 
     ngOnInit() {
         this.refresh();

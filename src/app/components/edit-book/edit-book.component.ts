@@ -22,6 +22,8 @@ export class EditBookComponent implements OnInit {
     public ctlEditor: FormControl;
 
     private updateCounter = new Date().getTime();
+    private tempPicturePath: string;
+
 
     constructor(public dialogRef: MatDialogRef<EditBookComponent>,
         @Inject(MAT_DIALOG_DATA) public data: Book,
@@ -41,6 +43,7 @@ export class EditBookComponent implements OnInit {
         });
 
         this.frm.patchValue(data);
+        this.tempPicturePath = data.picturePath;
     }
 
     // Validateur bidon qui vérifie que la valeur est différente
@@ -82,6 +85,10 @@ export class EditBookComponent implements OnInit {
 
     update() {
         const data = this.frm.value;
+        if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
+            this.bookService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
+            data.picturePath = 'uploads/' + data.isbn;
+        }
         if (data._id === undefined) {
             this.bookService.add(data).subscribe(m => data._id = m._id);
         } else {
@@ -91,6 +98,36 @@ export class EditBookComponent implements OnInit {
     }
 
     cancel() {
+        this.cancelTempPicture();
         this.dialogRef.close();
     }
+
+    get picturePath(): string {
+        // Le compteur updateCounter sert à générer un URL différent quand on change d'image
+        // car sinon l'image ne se rafraîchit pas parce que l'url ne change pas.
+        return this.tempPicturePath && this.tempPicturePath !== '' ?
+            (this.tempPicturePath + '?' + this.updateCounter) : 'uploads/cover.png';
+    }
+
+    fileChange(event) {
+        const fileList: FileList = event.target.files;
+        if (fileList.length > 0) {
+            const file = fileList[0];
+            this.bookService.uploadPicture(this.frm.value.isbn || 'empty', file).subscribe(path => {
+                this.cancelTempPicture();
+                this.tempPicturePath = path;
+                this.frm.markAsDirty();
+            });
+        }
+    }
+
+    cancelTempPicture() {
+        const data = this.frm.value;
+        if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
+            this.bookService.cancelPicture(this.tempPicturePath).subscribe();
+        }
+    }
+
+
+
 }

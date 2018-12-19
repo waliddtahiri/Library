@@ -92,4 +92,47 @@ export class BookService {
             })
         );
     }
+
+
+    public update_picture_path(isbn: string, path: string): Observable<boolean> {
+        return this.http.put<Book>(URL, { picturePath: path }).pipe(
+            map(res => true),
+            catchError(err => {
+                console.error(err);
+                return of(false);
+            })
+        );
+    }
+
+    public uploadPicture(isbn, file): Observable<string> {
+        const formData = new FormData();
+        formData.append('isbn', isbn);
+        formData.append('picture', file);
+        return this.http.post<string>(URL + 'upload', formData).pipe(
+            catchError(err => {
+                console.error(err);
+                return of(null);
+            })
+        );
+    }
+
+    public confirmPicture(isbn, path): Observable<string> {
+        console.log(isbn, path);
+        return this.http.post<string>(URL + 'confirm', { isbn: isbn, picturePath: path }).pipe(
+            catchError(err => {
+                console.error(err);
+                return of(null);
+            })
+        );
+    }
+
+    public cancelPicture(path): Observable<string> {
+        return this.http.post<string>(URL + 'cancel', { picturePath: path }).pipe(
+            catchError(err => {
+                console.error(err);
+                return of(null);
+            })
+        );
+    }
+
 }
