@@ -42,8 +42,10 @@ export class BookListComponent implements OnInit {
                 }
               });
          });
-         this.memberService.getOne(authService.currentUser).subscribe(m => this.current = m);
-
+         this.memberService.getOne(authService.currentUser).subscribe(m => {
+            this.current = m;
+            console.log(this.current);
+        });
          this.categoryService.getAll().subscribe(categories => {
             categories.forEach(c => {
               this.categoriesSource.push(c);

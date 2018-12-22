@@ -22,3 +22,7 @@ table {
   .box {
     width: 135px;
   }
+
+  .filter {
+    width: 250px;
+  }

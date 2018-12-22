@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import * as path from 'path';
 import Member from './models/member';
+import Rental from './models/rental';
 import Book from './models/book';
 import Category from './models/category';
 import { MembersRouter } from './routes/members.router';
@@ -40,11 +41,11 @@ export class Server {
         this.express.use('/api/token', new AuthentificationRouter().router);
         this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
         this.express.use('/api/members-common', new MembersCommonRouter().router);
-        this.express.use('/api/members', new MembersRouter().router);
         this.express.use('/api/books', new BooksRouter().router);
         this.express.use('/api/rentals', new RentalRouter().router);
         this.express.use(AuthentificationRouter.checkAdmin);
                    // à partir d'ici il faut être administrateur
+        this.express.use('/api/members', new MembersRouter().router);
         this.express.use('/api/categories', new CategoriesRouter().router);
     }
 
@@ -72,49 +73,46 @@ export class Server {
     }
 
     private initData() {
-        Member.count({}).then(count => {
-            if (count === 0) {
-                console.log('Initializing data...');
-                Member.insertMany([
-                    { pseudo: 'test', password: 'test', profile: 'Hi, I\'m test!' },
-                    { pseudo: 'ben', password: 'ben', profile: 'Hi, I\'m ben!' },
-                    { pseudo: 'bruno', password: 'bruno', profile: 'Hi, I\'m bruno!' },
-                    { pseudo: 'boris', password: 'boris', profile: 'Hi, I\'m boris!' },
-                    { pseudo: 'alain', password: 'alain', profile: 'Hi, I\'m alain!' }
-                ]);
+        Rental.aggregate([
+            // permet d'obtenir un document par item
+            { $unwind: '$items' },
+            {
+                // jointure sur les membres pour avoir les données du membre plutôt que son id
+                $lookup: {
+                    from: 'members',        // jointure sur la collection 'members'
+                    localField: 'member',   // jointure se fait entre rentals.member ...
+                    foreignField: '_id',    // ... et books._id
+                    as: 'member'            // alias pour le résultat
+                }
+            },
+            {
+                // jointure sur les livres
+                $lookup: {
+                    from: 'books',
+                    localField: 'items.book',
+                    foreignField: '_id',
+                    as: 'book'
+                }
+            },
+            // par défaut les jointures retournent un array, même si une seul élément. Grâce au
+            // $unwind on transforme cet array d'un seul élément en l'élément lui-même.
+            { $unwind: '$member' },
+            { $unwind: '$book' },
+            {
+                // La projection permet de formater les objets retournés par le query.
+                // A gauche de chaque attribut on met le nom qu'on veut obtenir et à droite
+                // on met soit true pour dire qu'on prend la donnée qui a le même nom, soit
+                // on met une expression qui sera évaluée (ex: $items._id) pour avoir l'id
+                // du rental item.
+                $project: {
+                    _id: '$items._id',
+                    orderDate: true,
+                    member: true,
+                    returnDate: '$items.returnDate',
+                    'book': '$book'
+                }
             }
-        });
-        Book.count({}).then(count => {
-            if (count === 0) {
-                console.log('Initializing data...');
-                Book.insertMany([
-                    { isbn: '123', author: 'ben', title: 'Angular for dummies', editor: 'EPFC' },
-                    { isbn: '456', author: 'bru', title: 'TS for dummies', editor: 'EPFC' },
-                    { isbn: '789', author: 'bo', title: 'Java for dummies', editor: 'EPFC' }
-                ]);
-            }
-        });
-        Category.count({}).then(count => {
-            if (count === 0) {
-                console.log('Initializing data...');
-                Category.insertMany([
-                    { name: 'Informatique' },
-                    { name: 'Science Fiction' },
-                    { name: 'Roman' },
-                    { name: 'Littérature' },
-                    { name: 'Essai' }
-                ]);
-            }
-        });
-        Member.count({ pseudo: 'admin' }).then(count => {
-            if (count === 0) {
-                console.log('Creating admin account...');
-                Member.create({
-                    pseudo: 'admin', password: 'admin',
-                    profile: 'I\'m the administrator of the site!', admin: true
-                });
-            }
-        });
+        ]);
     }
 
     // démarrage du serveur express

@@ -37,6 +37,16 @@ export class RentalService {
         );
     }
 
+    public getOne(s: String): Observable<Rental[]> {
+        return this.http.get<Rental[]>(URL + s).pipe(
+            map(res => res.length > 0 ? new Rental(res[0]) : null),
+            catchError(err => {
+                console.error(err);
+                return of(null);
+            })
+        );
+    }
+
     public update(r: Rental): Observable<boolean> {
         return this.http.put<Rental>(URL + r.orderDate, r).pipe(
             map(res => true),
