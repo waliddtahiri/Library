@@ -9,13 +9,15 @@ import * as mongoose from 'mongoose';
 import { Db } from 'mongodb';
 
 @Component({
-    templateUrl: 'home.component.html'
+    templateUrl: 'home.component.html',
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
     public current: Member;
     private updateCounter = new Date().getTime();
-    displayedColumns: string[] = ['orderDate', 'book'];
+    displayedColumns: string[] = ['orderDate', 'book.title'];
     dataSource: MatTableDataSource<Rental>;
+    userRentals: Rental[] = [];
 
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -27,7 +29,7 @@ export class HomeComponent implements OnInit {
         public memberService: MemberService) {
         this.memberCommonService.getOne(authService.currentUser).subscribe(m => {
             this.current = m;
-            console.log(this.current._id);
+            m.rentals.forEach(r => this.userRentals.push(r));
         });
     }
 
@@ -37,11 +39,11 @@ export class HomeComponent implements OnInit {
 
 
     refresh() {
-        this.rentalService.getAll().subscribe(rentals => {
+        this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
+            console.log(rentals);
             this.dataSource = new MatTableDataSource(rentals);
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
-            console.log(rentals);
         });
     }
 

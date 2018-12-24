@@ -29,17 +29,15 @@ export class RentalService {
 
     public getAll(): Observable<Rental[]> {
         return this.http.get<Rental[]>(URL).pipe(
-            map(res => res.map(r => new Rental(r))),
             catchError(err => {
                 console.error(err);
-                return [];
+                return of(null);
             })
         );
     }
 
-    public getOne(s: String): Observable<Rental[]> {
-        return this.http.get<Rental[]>(URL + s).pipe(
-            map(res => res.length > 0 ? new Rental(res[0]) : null),
+    public getOne(pseudo: String): Observable<Rental[]> {
+        return this.http.get<Rental[]>(URL + pseudo).pipe(
             catchError(err => {
                 console.error(err);
                 return of(null);
@@ -67,7 +65,6 @@ export class RentalService {
     }
 
     public add(r: Rental): Observable<Rental> {
-        console.log('ddd');
         return this.http.post<Rental>(URL, r).pipe(
             map(res => new Rental(res)),
             catchError(err => {
