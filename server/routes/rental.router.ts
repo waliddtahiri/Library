@@ -9,7 +9,7 @@ export class RentalRouter {
         this.router = Router();
         this.router.get('/', this.getAll);
         this.router.post('/', this.create);
-        this.router.get('/:id', this.getOne);
+        this.router.get('/:pseudo', this.getOne);
 
     }
 
@@ -64,7 +64,7 @@ export class RentalRouter {
 
     public async getOne(req: Request, res: Response, next: NextFunction) {
         try {
-            const member = await Member.findOne({pseudo: req.params.id});
+            const member = await Member.findOne({pseudo: req.params.pseudo});
             const pseudo = member.pseudo;
             const rental = await Rental.find().then(() => Rental.aggregate([
                 // permet d'obtenir un document par item

@@ -2,7 +2,7 @@
     <div class="welcome">
         <h1>Welcome {{authService.currentUser}}!</h1>
         <div class="col-sm-12">
-                <img class="img-responsive" [src]="picturePath" width="120px">
+                <img class="img-responsive" [src]="picturePath" width="250px">
                 <br><br>
         </div>
         <div class="col-sm-12">
@@ -14,8 +14,8 @@
 </div>
 <ng-container *ngIf="!authService.isAdmin">
 <div class="row mt-3">
+    <h4>These are your currently rented books. Don't forget to return them in time ! ;)</h4>
     <div>
-        <h4>These are the books your currently rented books. Dont't forget to return them in time ! ;)</h4>
         <table mat-table [dataSource]="dataSource" matSort matSortActive="orderDate" matSortDirection="asc" matSortDisableClear>
             <ng-container  matColumnDef="orderDate">
                 <th class="date" mat-header-cell *matHeaderCellDef mat-sort-header> Rental Date </th>
