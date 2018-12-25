@@ -1,19 +1,28 @@
-.date{
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  td, th {
+    /* width: 25%; */
+  }
+  
+  th.mat-column-actions {
+    width: 110px;
+  }
+
+  .actions-column {
+    width: 145px;
+  }
+
+  .box {
+    width: 135px;
+  }
+
+  .filter {
     width: 150px;
-}
-
-.title{
-    width: 300px;
-}
-
-.row{
-    text-align: right;
-}
-
-.table{
-    text-align: center;
-}
-
-.welcome{
-    text-align: center;
-}
+  }

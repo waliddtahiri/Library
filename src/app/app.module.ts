@@ -8,7 +8,7 @@ import {
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
     MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
     MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
-    MatTabsModule, MatSelectModule,
+    MatTabsModule, MatSelectModule, MatRadioModule,
 } from '@angular/material';
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
@@ -64,6 +64,7 @@ export function tokenGetter() {
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
         MatSlideToggleModule, MatDialogModule, MatSnackBarModule, MatTabsModule, MatSelectModule,
+        MatRadioModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },

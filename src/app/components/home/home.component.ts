@@ -9,14 +9,17 @@ import * as mongoose from 'mongoose';
 import { Db } from 'mongodb';
 
 @Component({
+    selector: 'app-home-mat',
     templateUrl: 'home.component.html',
     styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
     public current: Member;
     private updateCounter = new Date().getTime();
+    displayedColumnsAdmin: string[] = ['orderDate', 'member.pseudo', 'book.title', 'returnDate', 'actions'];
     displayedColumns: string[] = ['orderDate', 'book.title'];
     dataSource: MatTableDataSource<Rental>;
+    dataSourceAdmin: MatTableDataSource<Rental>;
     userRentals: Rental[] = [];
 
 
@@ -40,10 +43,14 @@ export class HomeComponent implements OnInit {
 
     refresh() {
         this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
-            console.log(rentals);
             this.dataSource = new MatTableDataSource(rentals);
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
+        });
+        this.rentalService.getAll().subscribe(rentals => {
+            this.dataSourceAdmin = new MatTableDataSource(rentals);
+            this.dataSourceAdmin.paginator = this.paginator;
+            this.dataSourceAdmin.sort = this.sort;
         });
     }
 
