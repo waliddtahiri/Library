@@ -31,6 +31,11 @@
                         <span class="fa fa-sign-in"></span> Login
                     </a>
                 </li>
+                <li class="nav-item" *ngIf="!authService.isLoggedIn">
+                    <a class="nav-link" [routerLink]="['/signup']">
+                        <span class="fa fa-sign-in"></span> Sign Up
+                    </a>
+                </li>
             </ng-container>
             <ng-container *ngIf="authService.isLoggedIn">
                 <li class="nav-item" *ngIf="authService.isLoggedIn">

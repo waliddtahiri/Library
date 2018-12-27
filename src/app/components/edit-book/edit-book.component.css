@@ -23,6 +23,7 @@
     justify-items: center;
 }
 
+
 .picture-container {
     display: grid;
     justify-items: center;
@@ -30,4 +31,27 @@
     grid-template-columns: auto;
     grid-row-gap: 10px;
     margin: 10px;
+}
+
+.block {
+    display: inline-block;
+}
+
+mat-selection-list {
+    border: solid;
+    background-color: beige;
+}
+
+.btn {
+    background-color: lightblue;
+}
+
+h6{
+    text-align: center;
+}
+
+mat-list-option {
+    width: 200px;
+    height: 150px;;
+
 }

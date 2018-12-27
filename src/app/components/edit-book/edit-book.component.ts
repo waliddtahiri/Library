@@ -6,13 +6,16 @@ import { FormGroup } from '@angular/forms';
 import { FormControl } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
+import { Category, CategoryService } from '../../services/category.service';
 import * as _ from 'lodash';
+import {ChangeDetectionStrategy} from '@angular/core';
 
 
 @Component({
     selector: 'app-edit-book-mat',
     templateUrl: './edit-book.component.html',
-    styleUrls: ['./edit-book.component.css']
+    styleUrls: ['./edit-book.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditBookComponent implements OnInit {
     public frm: FormGroup;
@@ -20,6 +23,12 @@ export class EditBookComponent implements OnInit {
     public ctlAuthor: FormControl;
     public ctlTitle: FormControl;
     public ctlEditor: FormControl;
+    public ctlCategory: FormControl;
+    categoriesSource: Category[] = [];
+    categoriesBook: Category[] = [];
+    selectionTab: Category[] = [];
+
+
 
     private updateCounter = new Date().getTime();
     private tempPicturePath: string;
@@ -28,6 +37,7 @@ export class EditBookComponent implements OnInit {
     constructor(public dialogRef: MatDialogRef<EditBookComponent>,
         @Inject(MAT_DIALOG_DATA) public data: Book,
         private fb: FormBuilder,
+        public categoryService: CategoryService,
         private bookService: BookService) {
         this.ctlIsbn = this.fb.control('', [Validators.required,
         this.forbiddenValue('abc')], [this.isbnUsed()]);
@@ -40,10 +50,14 @@ export class EditBookComponent implements OnInit {
             author: this.ctlAuthor,
             title: this.ctlTitle,
             editor: this.ctlEditor,
+            categories: new Array()
         });
 
         this.frm.patchValue(data);
         this.tempPicturePath = data.picturePath;
+
+        this.initTab();
+
     }
 
     // Validateur bidon qui vérifie que la valeur est différente
@@ -84,7 +98,17 @@ export class EditBookComponent implements OnInit {
     }
 
     update() {
+        console.log('update');
         const data = this.frm.value;
+        data.categories  = [];
+        console.log(data);
+
+        this.categoriesBook.forEach(c => {
+            // c.books = this.data._id;
+            console.log(c);
+            data.categories.push(c);
+          });
+
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
             this.bookService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
             data.picturePath = 'uploads/' + data.isbn;
@@ -94,6 +118,9 @@ export class EditBookComponent implements OnInit {
         } else {
             this.bookService.update(data).subscribe();
         }
+        this.categoriesSource = [];
+        this.categoriesBook = [];
+
         this.dialogRef.close(data);
     }
 
@@ -129,5 +156,74 @@ export class EditBookComponent implements OnInit {
     }
 
 
+    isCatSelected( val: any) {
+        if (val > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+
+    }
+
+    onSelection(e, v) {
+        this.selectionTab = [];
+
+        v.forEach(c => {
+            this.selectionTab.push(c.value);
+          });
+
+        console.log(v.length);
+
+     }
+
+     addToBook() {
+        this.selectionTab.forEach(c => {
+            c.books.push(this.data);
+            this.categoriesBook.push(c);
+            const index = this.categoriesSource.indexOf(c);
+            this.categoriesSource.splice(index, 1);
+          });
+          this.selectionTab = [];
+
+          this.frm.markAsDirty();
+     }
+
+     removeFromBook () {
+        this.selectionTab.forEach(c => {
+            this.categoriesSource.push(c);
+            const index = this.categoriesBook.indexOf(c);
+            this.categoriesBook.splice(index, 1);
+            const index2 = c.books.indexOf(this.data);
+            c.books.splice(index2, 1);
+          });
+          this.selectionTab = [];
+
+          this.frm.markAsDirty();
+     }
+
+
+
+     initTab () {
+         // on initialise les tableaux categories
+        this.categoryService.getAll().subscribe(categories => {
+            categories.forEach(c => {
+
+                this.data.categories.forEach(c2 => {
+                    if (c._id === c2.toString()) {
+                        this.categoriesBook.push(c);
+                    }
+                  });
+                });
+
+                categories.forEach(c => {
+                    if (!this.categoriesBook.includes(c)) {
+                    this.categoriesSource.push(c);
+                    }
+                  });
+       });
+     }
+
+
 
 }
+

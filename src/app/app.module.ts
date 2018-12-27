@@ -8,14 +8,16 @@ import {
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
     MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
     MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
-    MatTabsModule, MatSelectModule, MatRadioModule,
+    MatTabsModule, MatSelectModule, MatRadioModule, MatListModule,
 } from '@angular/material';
+import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import { AppComponent } from './app.component';
 import { MemberService } from './services/member.service';
 import { BookService } from './services/book.service';
 import { RentalService } from './services/rental.service';
 import { CategoryService } from './services/category.service';
 import { LoginComponent } from './components/login/login.component';
+import { SignupComponent } from './components/signup/signup.component';
 import { HomeComponent } from './components/home/home.component';
 import { UnknownComponent } from './components/unknown/unknown.component';
 import { SecuredHttp } from './services/securedhttp.service';
@@ -45,6 +47,7 @@ export function tokenGetter() {
         BookListComponent,
         CategoryListComponent,
         LoginComponent,
+        SignupComponent,
         LogoutComponent,
         HomeComponent,
         UnknownComponent,
@@ -63,11 +66,12 @@ export function tokenGetter() {
         ReactiveFormsModule,
         MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule,
         MatTableModule, MatPaginatorModule, MatSortModule, MatIconModule,
-        MatSlideToggleModule, MatDialogModule, MatSnackBarModule, MatTabsModule, MatSelectModule,
-        MatRadioModule,
+        MatSlideToggleModule, MatDialogModule, MatSnackBarModule, MatTabsModule, MatSelectModule, MatListModule,
+        MatRadioModule, ScrollDispatchModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'login', component: LoginComponent },
+            { path: 'signup', component: SignupComponent },
             {
                 path: '',
                 canActivate: [AuthGuard],
