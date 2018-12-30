@@ -24,10 +24,11 @@ export class EditBookComponent implements OnInit {
     public ctlTitle: FormControl;
     public ctlEditor: FormControl;
     public ctlCategory: FormControl;
+    public categories;
     categoriesSource: Category[] = [];
     categoriesBook: Category[] = [];
-    selectionTab: Category[] = [];
-
+    selectionTableft: Category[];
+    selectionTabright: Category[];
 
 
     private updateCounter = new Date().getTime();
@@ -44,20 +45,17 @@ export class EditBookComponent implements OnInit {
         this.ctlAuthor = this.fb.control('', [Validators.required]);
         this.ctlTitle = this.fb.control('', [Validators.required]);
         this.ctlEditor = this.fb.control('', [Validators.required]);
+        this.ctlCategory = this.fb.control('', []);
         this.frm = this.fb.group({
             _id: null,
             isbn: this.ctlIsbn,
             author: this.ctlAuthor,
             title: this.ctlTitle,
             editor: this.ctlEditor,
-            categories: new Array()
         });
 
         this.frm.patchValue(data);
         this.tempPicturePath = data.picturePath;
-
-        this.initTab();
-
     }
 
     // Validateur bidon qui vérifie que la valeur est différente
@@ -95,19 +93,13 @@ export class EditBookComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.initTab();
     }
 
     update() {
         console.log('update');
         const data = this.frm.value;
-        data.categories  = [];
-        console.log(data);
-
-        this.categoriesBook.forEach(c => {
-            // c.books = this.data._id;
-            console.log(c);
-            data.categories.push(c);
-          });
+        data.categories = this.categoriesBook;
 
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
             this.bookService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
@@ -118,10 +110,7 @@ export class EditBookComponent implements OnInit {
         } else {
             this.bookService.update(data).subscribe();
         }
-        this.categoriesSource = [];
-        this.categoriesBook = [];
-
-        this.dialogRef.close(data);
+        this.dialogRef.close();
     }
 
     cancel() {
@@ -165,39 +154,46 @@ export class EditBookComponent implements OnInit {
 
     }
 
-    onSelection(e, v) {
-        this.selectionTab = [];
+    onSelectionleft(e, v) {
+        this.selectionTableft = [];
 
         v.forEach(c => {
-            this.selectionTab.push(c.value);
+            this.selectionTableft.push(c.value);
           });
 
         console.log(v.length);
+     }
 
+     onSelectionright(e, v) {
+        this.selectionTabright = [];
+
+        v.forEach(c => {
+            this.selectionTabright.push(c.value);
+          });
+
+        console.log(v.length);
      }
 
      addToBook() {
-        this.selectionTab.forEach(c => {
+        this.selectionTableft.forEach(c => {
             c.books.push(this.data);
             this.categoriesBook.push(c);
             const index = this.categoriesSource.indexOf(c);
             this.categoriesSource.splice(index, 1);
           });
-          this.selectionTab = [];
-
+          this.selectionTableft = [];
           this.frm.markAsDirty();
      }
 
      removeFromBook () {
-        this.selectionTab.forEach(c => {
+        this.selectionTabright.forEach(c => {
             this.categoriesSource.push(c);
             const index = this.categoriesBook.indexOf(c);
             this.categoriesBook.splice(index, 1);
             const index2 = c.books.indexOf(this.data);
             c.books.splice(index2, 1);
           });
-          this.selectionTab = [];
-
+          this.selectionTabright = [];
           this.frm.markAsDirty();
      }
 
@@ -205,25 +201,18 @@ export class EditBookComponent implements OnInit {
 
      initTab () {
          // on initialise les tableaux categories
-        this.categoryService.getAll().subscribe(categories => {
-            categories.forEach(c => {
-
+        this.categoryService.getAll().subscribe(cat => {
+            cat.forEach(c => {
                 this.data.categories.forEach(c2 => {
                     if (c._id === c2.toString()) {
                         this.categoriesBook.push(c);
                     }
                   });
-                });
-
-                categories.forEach(c => {
-                    if (!this.categoriesBook.includes(c)) {
+                  if (!this.categoriesBook.includes(c)) {
                     this.categoriesSource.push(c);
                     }
-                  });
-       });
+                });
+            });
      }
-
-
-
 }
 

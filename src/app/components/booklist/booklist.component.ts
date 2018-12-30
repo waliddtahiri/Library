@@ -22,6 +22,7 @@ export class BookListComponent implements OnInit {
     displayedColumns: string[] = ['isbn', 'author', 'title', 'editor', 'actions'];
     dataSource: MatTableDataSource<Book>;
     selectedMember: Member;
+    selectedCategory: Category;
     basketSource: Book[];
     membersSource: Member[] = [];
     categoriesSource: Category[] = [];
@@ -70,6 +71,11 @@ export class BookListComponent implements OnInit {
         if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
         }
+    }
+
+    applyFilterCategory() {
+        this.dataSource.data = _.filter(this.dataSource.data, b => b.categories.includes(this.selectedCategory));
+        console.log(this.selectedCategory);
     }
 
     isEmpty(b: Book[] = []): Boolean {
@@ -144,6 +150,7 @@ export class BookListComponent implements OnInit {
             if (res) {
                 _.assign(book, res);
             }
+            this.refresh();
         });
     }
 
@@ -173,5 +180,9 @@ export class BookListComponent implements OnInit {
     onMemberSelected (val: any) {
           this.selectedMember = val;
     }
+
+    onCategorySelected (val: any) {
+        this.selectedCategory = val;
+  }
 
 }

@@ -8,7 +8,7 @@
         </mat-form-field>
         <br>
         <mat-form-field class="box">
-                <mat-select [(ngModel)]="selectedCategory" (ngModelChange)='onCategorySelected($event)' placeholder="Categories">
+                <mat-select [(ngModel)]="selectedCategory" (ngModelChange)='onCategorySelected(applyFilterCategory())' placeholder="Categories">
                     <mat-option *ngFor="let Category of categoriesSource" [value]="Category">{{Category.name}}</mat-option>
                 </mat-select>
         </mat-form-field>

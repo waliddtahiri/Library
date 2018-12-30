@@ -7,6 +7,7 @@ import { map, flatMap } from 'rxjs/operators';
 import {Rental, RentalService} from '../../services/rental.service';
 import * as mongoose from 'mongoose';
 import { Db } from 'mongodb';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-home-mat',
@@ -20,7 +21,6 @@ export class HomeComponent implements OnInit {
     displayedColumns: string[] = ['orderDate', 'book.title'];
     dataSource: MatTableDataSource<Rental>;
     dataSourceAdmin: MatTableDataSource<Rental>;
-    userRentals: Rental[] = [];
 
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -29,10 +29,9 @@ export class HomeComponent implements OnInit {
     constructor(public authService: AuthService,
         public memberCommonService: MemberCommonService,
         public rentalService: RentalService,
-        public memberService: MemberService) {
+        public memberService: MemberService, public snackBar: MatSnackBar) {
         this.memberCommonService.getOne(authService.currentUser).subscribe(m => {
             this.current = m;
-            m.rentals.forEach(r => this.userRentals.push(r));
         });
     }
 
@@ -74,5 +73,18 @@ export class HomeComponent implements OnInit {
         // car sinon l'image ne se rafra�chit pas parce que l'url ne change pas.
         return this.current && this.current.picturePath !== '' ?
             (this.current.picturePath + '?' + this.updateCounter) : 'uploads/unknown-user.jpg';
+    }
+
+    private delete(rental: Rental) {
+        const backup = this.dataSourceAdmin.data;
+        this.dataSourceAdmin.data = _.filter(this.dataSourceAdmin.data, r => r._id !== rental._id);
+        const snackBarRef = this.snackBar.open(`Rental will be deleted`, 'Undo', { duration: 3000 });
+        snackBarRef.afterDismissed().subscribe(res => {
+            if (!res.dismissedByAction) {
+                this.rentalService.delete(rental).subscribe();
+            } else {
+                this.dataSourceAdmin.data = backup;
+            }
+        });
     }
 }

@@ -32,18 +32,18 @@
         <mat-tab label="Categories" class="catblock">
             <div class="block">
               <div><h6>Available</h6> </div>
-              <mat-selection-list #allCategories (selectionChange)="onSelection($event, allCategories.selectedOptions.selected)">
+              <mat-selection-list #allCategories (selectionChange)="onSelectionleft($event, allCategories.selectedOptions.selected)">
                   <mat-list-option *ngFor="let Category of categoriesSource" [value] = "Category" > {{ Category.name }}
                   </mat-list-option>
               </mat-selection-list>     
             </div>
             <div class="block">
-                    <button class="btn" [disabled]="isCatSelected(allCategories.selectedOptions.selected.length)" mat-stroked-button (click)="addToBook()">>></button>
-                    <button class="btn" [disabled]="isCatSelected(bookCategories.selectedOptions.selected.length)" mat-stroked-button (click)="removeFromBook()"><<</button>
+                    <button class="btn" [disabled]="isCatSelected(allCategories.selectedOptions.selected.length)" mat-stroked-button (click)="addToBook()"> >> </button>
+                    <button class="btn" [disabled]="isCatSelected(bookCategories.selectedOptions.selected.length)" mat-stroked-button (click)="removeFromBook()"> << </button>
             </div>
             <div class="block">
                     <div><h6>Associated to a book</h6> </div>
-                    <mat-selection-list #bookCategories (selectionChange)="onSelection($event, bookCategories.selectedOptions.selected)">
+                    <mat-selection-list #bookCategories (selectionChange)="onSelectionright($event, bookCategories.selectedOptions.selected)">
                         <mat-list-option *ngFor="let Category of categoriesBook" [value] = "Category"> {{ Category.name }}
                         </mat-list-option>
                     </mat-selection-list>     

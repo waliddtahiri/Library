@@ -10,6 +10,7 @@ export class RentalRouter {
         this.router.get('/', this.getAll);
         this.router.post('/', this.create);
         this.router.get('/:pseudo', this.getOne);
+        this.router.delete('/:id', this.deleteOne);
 
     }
 
@@ -57,6 +58,19 @@ export class RentalRouter {
             ])
         );
             res.json(rentals);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    public async deleteOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const rental = await Rental.findByIdAndRemove({ id: req.params.id });
+            if (rental != null) {
+                res.json(true);
+            } else {
+                res.status(404).json(false);
+            }
         } catch (err) {
             res.status(500).send(err);
         }

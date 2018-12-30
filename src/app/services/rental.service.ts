@@ -55,8 +55,8 @@ export class RentalService {
         );
     }
 
-    public delete(r: Rental): Observable<boolean> {
-        return this.http.delete<boolean>(URL + r.orderDate).pipe(
+    public delete(rental: Rental): Observable<boolean> {
+        return this.http.delete<boolean>(URL + rental._id).pipe(
             catchError(err => {
                 console.error(err);
                 return of(false);
