@@ -16,7 +16,8 @@ import * as mongoose from 'mongoose';
 import { Db } from 'mongodb';
 import { FormControl } from '@angular/forms';
 import { EditRentalComponent } from '../edit-rental/edit-rental.component';
-import _ = require('lodash');
+import * as _ from 'lodash';
+
 
 @Component({
   selector: 'app-home-mat',
