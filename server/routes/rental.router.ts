@@ -10,8 +10,21 @@ export class RentalRouter {
         this.router.get('/', this.getAll);
         this.router.post('/', this.create);
         this.router.get('/:pseudo', this.getOne);
+        this.router.get('/member/rental/item/:id', this.getRentalByItem);
         this.router.delete('/:id', this.deleteOne);
+        this.router.put('/:id',this.update);
 
+    }
+
+    public async update(req: Request, res: Response, next: NextFunction) {
+        try {
+            const updatedRental = await Rental.findOneAndUpdate({ _id: req.params.id },
+                req.body,
+                { new: true });  // pour renvoyer le document modifié
+            res.json(updatedRental);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
@@ -65,7 +78,11 @@ export class RentalRouter {
 
     public async deleteOne(req: Request, res: Response, next: NextFunction) {
         try {
-            const rental = await Rental.findByIdAndRemove({ id: req.params.id });
+            const rental = await Rental.findOneAndRemove({ _id: req.params.id });
+            res = await Member.updateMany(
+                { _id: { $in: rental.member } },
+                { $pull: { rentals: rental._id } }
+            );
             if (rental != null) {
                 res.json(true);
             } else {
@@ -141,4 +158,16 @@ export class RentalRouter {
             res.status(500).send(err);
         }
     }
+
+    public async getRentalByItem(req: Request, res: Response, next: NextFunction) {
+      
+        try {
+           const rental = await Rental.find({ "items._id": req.params.id });
+           res.json(rental);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    }
+
+    
 }

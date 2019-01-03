@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 import { AuthService } from '../../services/auth.service';
 import {Rental, RentalService} from '../../services/rental.service';
 import { FormBuilder } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -34,6 +35,7 @@ export class BookListComponent implements OnInit {
     constructor(private bookService: BookService, public rentalService: RentalService,
          public memberService: MemberCommonService,
          public categoryService: CategoryService,
+         private datePipe : DatePipe,
          public authService: AuthService, private fb: FormBuilder,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
          this.memberService.getAll().subscribe(members => {
@@ -57,6 +59,11 @@ export class BookListComponent implements OnInit {
     ngOnInit() {
         this.refresh();
     }
+
+    formatDate() {
+        const date = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        return date;
+      }
 
     refresh() {
         this.bookService.getAll().subscribe(books => {
@@ -105,7 +112,7 @@ export class BookListComponent implements OnInit {
         const items = [];
         const rentals = [];
         if (this.basketSource.length > 0) {
-        const rental = new Rental({ member: this.current, orderDate: new Date().toLocaleString()});
+        const rental = new Rental({ member: this.current, orderDate: new Date()});
         books.forEach(b => items.push({ book: b, returnDate: null }));
         rental.items = items;
         this.rentalService.add(rental).subscribe(res => {
@@ -120,11 +127,14 @@ export class BookListComponent implements OnInit {
     }
 
     private confirm_basket_admin() {
+        console.log('dfsfsdfsd')
+        console.log(new Date().toLocaleString())
+
         const books = this.basketSource;
         const items = [];
         const rentals = [];
         if (this.basketSource.length > 0) {
-        const rental = new Rental({ member: this.selectedMember, orderDate: new Date().toLocaleString()});
+        const rental = new Rental({ member: this.selectedMember, orderDate: this.formatDate()});
         books.forEach(b => items.push({ book: b, returnDate: null }));
         rental.items = items;
         this.rentalService.add(rental).subscribe(res => {

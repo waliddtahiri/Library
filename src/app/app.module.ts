@@ -29,11 +29,14 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { EditMemberComponent } from './components/edit-member/edit-member.component';
 import { SetFocusDirective } from './directives/setfocus.directive';
 import { MemberCommonService } from './services/member-common.service';
+import { BookCommonService } from './services/book-common.service';
 import { MemberListComponent } from './components/memberlist/memberlist.component';
 import { BookListComponent } from './components/booklist/booklist.component';
 import { CategoryListComponent } from './components/categorylist/categorylist.component';
 import { EditBookComponent } from './components/edit-book/edit-book.component';
+import { EditRentalComponent } from './components/edit-rental/edit-rental.component';
 import { EditCategoryComponent } from './components/edit-category/edit-category.component';
+import { DatePipe } from '@angular/common';
 
 export function tokenGetter() {
     return sessionStorage.getItem('id_token');
@@ -54,10 +57,11 @@ export function tokenGetter() {
         RestrictedComponent,
         EditMemberComponent,
         EditBookComponent,
+        EditRentalComponent,
         EditCategoryComponent,
         SetFocusDirective,
     ],
-    entryComponents: [EditMemberComponent, EditBookComponent, EditCategoryComponent],
+    entryComponents: [EditMemberComponent, EditBookComponent,EditRentalComponent, EditCategoryComponent],
     imports: [
         HttpClientModule,
         BrowserModule,
@@ -107,7 +111,9 @@ export function tokenGetter() {
         BookService,
         CategoryService,
         MemberCommonService,
+        BookCommonService,
         RentalService,
+        DatePipe,
     ],
     bootstrap: [AppComponent]
 })

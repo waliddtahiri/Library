@@ -10,6 +10,7 @@ import Category from './models/category';
 import { MembersRouter } from './routes/members.router';
 import { AuthentificationRouter } from './routes/authentication.router';
 import { MembersCommonRouter } from './routes/members-common.router';
+import { BooksCommonRouter } from './routes/books-common.router';
 import { BooksRouter } from './routes/books.router';
 import { CategoriesRouter } from './routes/categories.router';
 import { RentalRouter } from './routes/rental.router';
@@ -42,6 +43,7 @@ export class Server {
         this.express.use('/api/rentals', new RentalRouter().router);
         this.express.use(AuthentificationRouter.checkAuthorization);    // à partir d'ici il faut être authentifié
         this.express.use('/api/members-common', new MembersCommonRouter().router);
+        this.express.use('/api/books-common', new BooksCommonRouter().router);
         this.express.use('/api/books', new BooksRouter().router);
         this.express.use('/api/categories', new CategoriesRouter().router);
         this.express.use(AuthentificationRouter.checkAdmin);

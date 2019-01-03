@@ -8,7 +8,7 @@ import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import * as _ from 'lodash';
 import { MemberCommonService } from '../../services/member-common.service';
-
+//
 @Component({
     selector: 'app-edit-member-mat',
     templateUrl: './edit-member.component.html',
@@ -97,7 +97,7 @@ export class EditMemberComponent implements OnInit {
 
     ngOnInit() {
     }
-
+ //
     update() {
         const data = this.frm.value;
         data.phones = this.phones;

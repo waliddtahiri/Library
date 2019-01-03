@@ -9,6 +9,7 @@ import { Validators } from '@angular/forms';
 import { Category, CategoryService } from '../../services/category.service';
 import * as _ from 'lodash';
 import {ChangeDetectionStrategy} from '@angular/core';
+import { BookCommonService } from '../../services/book-common.service';
 
 
 @Component({
@@ -39,7 +40,8 @@ export class EditBookComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: Book,
         private fb: FormBuilder,
         public categoryService: CategoryService,
-        private bookService: BookService) {
+        private bookService: BookService,
+        private bookCommonService: BookCommonService) {
         this.ctlIsbn = this.fb.control('', [Validators.required,
         this.forbiddenValue('abc')], [this.isbnUsed()]);
         this.ctlAuthor = this.fb.control('', [Validators.required]);
@@ -79,7 +81,7 @@ export class EditBookComponent implements OnInit {
                     if (ctl.pristine) {
                         resolve(null);
                     } else {
-                        this.bookService.getOne(isbn).subscribe(book => {
+                        this.bookCommonService.getOne(isbn).subscribe(book => {
                             resolve(book ? { isbnUsed: true } : null);
                         });
                     }
@@ -102,7 +104,7 @@ export class EditBookComponent implements OnInit {
         data.categories = this.categoriesBook;
 
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
-            this.bookService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
+            this.bookCommonService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
             data.picturePath = 'uploads/' + data.isbn;
         }
         if (data._id === undefined) {
@@ -129,7 +131,7 @@ export class EditBookComponent implements OnInit {
         const fileList: FileList = event.target.files;
         if (fileList.length > 0) {
             const file = fileList[0];
-            this.bookService.uploadPicture(this.frm.value.isbn || 'empty', file).subscribe(path => {
+            this.bookCommonService.uploadPicture(this.frm.value.isbn || 'empty', file).subscribe(path => {
                 this.cancelTempPicture();
                 this.tempPicturePath = path;
                 this.frm.markAsDirty();
@@ -140,7 +142,7 @@ export class EditBookComponent implements OnInit {
     cancelTempPicture() {
         const data = this.frm.value;
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
-            this.bookService.cancelPicture(this.tempPicturePath).subscribe();
+            this.bookCommonService.cancelPicture(this.tempPicturePath).subscribe();
         }
     }
 
