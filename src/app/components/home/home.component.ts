@@ -127,8 +127,6 @@ export class HomeComponent implements OnInit {
 
     this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
       return new Date(data.orderDate).getTime() >= new Date(filterValue).getTime();
-
-
     };
     this.dataSourceAdmin.filter = this.filterValueDate;
 
@@ -137,9 +135,9 @@ export class HomeComponent implements OnInit {
 
   private delete(any: any) {
     console.log("delete component", any);
-    const backup = this.dataSource.data;
+    const backup = this.dataSourceAdmin.data;
     this.dataSourceAdmin.data = _.filter(this.dataSourceAdmin.data, b => {
-      return b._id !== any._id
+      return b._id !== any._id;
     });
 
     const snackBarRef = this.snackBar.open('The rental  will be deleted', 'Undo', { duration: 5000 });
@@ -147,49 +145,37 @@ export class HomeComponent implements OnInit {
       if (!res.dismissedByAction) {
 
         this.rentalService.getRentalByItem(any._id).subscribe(res => {
-          console.log(res)
+          console.log(res);
           let array = res[0].items;
           let val = array.find(i => i._id === any._id); //equivalent a getOne(item)
 
-          const index = res[0].items.indexOf(val)
+          const index = res[0].items.indexOf(val);
           if (index > -1) {
             res[0].items.splice(index, 1);
           }
 
           if (res[0].items.length === 0) {
             this.rentalService.delete(res[0]).subscribe();
-          } else {
-            this.rentalService.update(res[0]).subscribe(
-              res => console.log(res)
-            )
           }
+        });
 
-        }
-
-        )
-        // this.rentalService.delete(any).subscribe();
       } else {
         this.dataSourceAdmin.data = backup;
       }
     });
   }
 
-  private edit(rental: Rental) {
-    const dlg = this.dialog.open(EditRentalComponent, { data: rental });
+  private edit(any: any) {
+    const dlg = this.dialog.open(EditRentalComponent, { data: any });
     dlg.beforeClose().subscribe(res => {
       if (res) {
-        _.assign(rental, res);
+        _.assign(any, res);
       }
       this.refresh();
     });
   }
 
   refresh() {
-    this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
-      this.dataSource = new MatTableDataSource(rentals);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
     this.rentalService.getAll().subscribe(rentals => {
       this.dataSourceAdmin = new MatTableDataSource(rentals);
       this.dataSourceAdmin.paginator = this.paginator;

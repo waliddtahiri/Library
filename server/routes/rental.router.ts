@@ -12,7 +12,7 @@ export class RentalRouter {
         this.router.get('/:pseudo', this.getOne);
         this.router.get('/member/rental/item/:id', this.getRentalByItem);
         this.router.delete('/:id', this.deleteOne);
-        this.router.put('/:id',this.update);
+        this.router.put('/:id', this.update);
 
     }
 
@@ -160,14 +160,11 @@ export class RentalRouter {
     }
 
     public async getRentalByItem(req: Request, res: Response, next: NextFunction) {
-      
         try {
-           const rental = await Rental.find({ "items._id": req.params.id });
+           const rental = await Rental.find({ 'items._id' : req.params.id });
            res.json(rental);
         } catch (err) {
             res.status(500).send(err);
         }
     }
-
-    
 }

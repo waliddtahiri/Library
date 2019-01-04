@@ -76,7 +76,6 @@ export class RentalService {
 
     public getRentalByItem(id: string){
         return this.http.get<Rental>(URL+'member/rental/item/'+id).pipe(
-           
             catchError(err => {
                 console.error(err);
                 return of(false);

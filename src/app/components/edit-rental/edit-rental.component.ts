@@ -16,21 +16,19 @@ import * as _ from 'lodash';
 })
 export class EditRentalComponent implements OnInit {
     public frm: FormGroup;
-    public ctlName: FormControl;
+    public ctlreturnDate: FormControl;
 
     private updateCounter = new Date().getTime();
 
     constructor(public dialogRef: MatDialogRef<EditRentalComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: Rental,
+        @Inject(MAT_DIALOG_DATA) public data: any,
         private fb: FormBuilder,
         private rentalService: RentalService) {
-        this.ctlName = this.fb.control('', [Validators.required,
-        this.forbiddenValue('abc')], [this.nameUsed()]);
+        this.ctlreturnDate = this.fb.control('', []);
         this.frm = this.fb.group({
             _id: null,
-            name: this.ctlName,
+            returnDate: this.ctlreturnDate,
         });
-
         this.frm.patchValue(data);
     }
 
@@ -73,13 +71,19 @@ export class EditRentalComponent implements OnInit {
 
     update() {
         const data = this.frm.value;
-        if (data._id === undefined) {
-            this.rentalService.add(data).subscribe(m => data._id = m._id);
-        } else {
-            this.rentalService.update(data).subscribe();
-        }
-        this.dialogRef.close(data);
+        this.rentalService.getRentalByItem(data._id).subscribe(res => {
+            const array = res[0].items;
+            const val = array.find(i => i._id === data._id); // equivalent a getOne(item)
+            const index = res[0].items.indexOf(val);
+            console.log(val);
+            if (index > -1) {
+                val.returnDate = new Date().getTime();
+            }
+            this.rentalService.update(res[0]).subscribe();
+        });
+        this.dialogRef.close();
     }
+
 
     cancel() {
         this.dialogRef.close();
