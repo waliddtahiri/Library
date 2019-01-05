@@ -25,7 +25,7 @@ export class EditCategoryComponent implements OnInit {
         private fb: FormBuilder,
         private categoryService: CategoryService) {
         this.ctlName = this.fb.control('', [Validators.required,
-        this.forbiddenValue('abc')], [this.nameUsed()]);
+        this.forbiddenValue('123')], [this.nameUsed()]);
         this.frm = this.fb.group({
             _id: null,
             name: this.ctlName,

@@ -27,7 +27,7 @@ export class BookListComponent implements OnInit {
     basketSource: Book[];
     membersSource: Member[] = [];
     categoriesSource: Category[] = [];
-    public current: Member;
+    current: Member;
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -35,7 +35,7 @@ export class BookListComponent implements OnInit {
     constructor(private bookService: BookService, public rentalService: RentalService,
          public memberService: MemberCommonService,
          public categoryService: CategoryService,
-         private datePipe : DatePipe,
+         private datePipe: DatePipe,
          public authService: AuthService, private fb: FormBuilder,
          public dialog: MatDialog, public snackBar: MatSnackBar) {
          this.memberService.getAll().subscribe(members => {
@@ -81,8 +81,7 @@ export class BookListComponent implements OnInit {
     }
 
     applyFilterCategory() {
-        this.dataSource.data = _.filter(this.dataSource.data, b => b.categories.includes(this.selectedCategory));
-        console.log(this.selectedCategory);
+        this.dataSource.filter = this.selectedCategory._id;
     }
 
     isEmpty(b: Book[] = []): Boolean {
@@ -155,6 +154,17 @@ export class BookListComponent implements OnInit {
 
 
     private edit(book: Book) {
+        const dlg = this.dialog.open(EditBookComponent, { data: book });
+        dlg.beforeClose().subscribe(res => {
+            if (res) {
+                _.assign(book, res);
+                console.log(res);
+            }
+            this.refresh();
+        });
+    }
+
+    private visualize(book: Book) {
         const dlg = this.dialog.open(EditBookComponent, { data: book });
         dlg.beforeClose().subscribe(res => {
             if (res) {

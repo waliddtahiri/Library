@@ -167,15 +167,26 @@ export class HomeComponent implements OnInit {
 
   private edit(any: any) {
     const dlg = this.dialog.open(EditRentalComponent, { data: any });
-    dlg.beforeClose().subscribe(res => {
-      if (res) {
-        _.assign(any, res);
-      }
-      this.refresh();
-    });
+    dlg.beforeClose().subscribe( () =>
+      this.refresh()
+    );
   }
 
+
   refresh() {
+    this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
+          rentals.forEach(
+          r => this.rentalService.getRentalByItem(r._id).subscribe(res => {
+          const array = res[0].items;
+          const val = array.find(i => i._id === r._id); // equivalent a getOne(item)
+          if (val.returnDate == null) {
+          this.dataSource = new MatTableDataSource(rentals);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          }
+        })
+      );
+    });
     this.rentalService.getAll().subscribe(rentals => {
       this.dataSourceAdmin = new MatTableDataSource(rentals);
       this.dataSourceAdmin.paginator = this.paginator;

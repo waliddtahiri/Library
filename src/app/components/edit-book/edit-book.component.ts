@@ -9,7 +9,10 @@ import { Validators } from '@angular/forms';
 import { Category, CategoryService } from '../../services/category.service';
 import * as _ from 'lodash';
 import {ChangeDetectionStrategy} from '@angular/core';
+import { Member } from '../../services/member.service';
 import { BookCommonService } from '../../services/book-common.service';
+import { AuthService } from '../../services/auth.service';
+import { MemberCommonService} from '../../services/member-common.service';
 
 
 @Component({
@@ -26,6 +29,7 @@ export class EditBookComponent implements OnInit {
     public ctlEditor: FormControl;
     public ctlCategory: FormControl;
     public categories;
+    public current: Member;
     categoriesSource: Category[] = [];
     categoriesBook: Category[] = [];
     selectionTableft: Category[];
@@ -38,7 +42,8 @@ export class EditBookComponent implements OnInit {
 
     constructor(public dialogRef: MatDialogRef<EditBookComponent>,
         @Inject(MAT_DIALOG_DATA) public data: Book,
-        private fb: FormBuilder,
+        private fb: FormBuilder, public authService: AuthService,
+        public memberService: MemberCommonService,
         public categoryService: CategoryService,
         private bookService: BookService,
         private bookCommonService: BookCommonService) {
@@ -58,6 +63,10 @@ export class EditBookComponent implements OnInit {
 
         this.frm.patchValue(data);
         this.tempPicturePath = data.picturePath;
+
+        this.memberService.getOne(authService.currentUser).subscribe(m => {
+            this.current = m;
+        });
     }
 
     // Validateur bidon qui vérifie que la valeur est différente

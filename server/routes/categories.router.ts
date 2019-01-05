@@ -9,9 +9,9 @@ export class CategoriesRouter {
         this.router.get('/', this.getAll);
         this.router.post('/', this.create);
         this.router.delete('/', this.deleteAll);
-        this.router.get('/:name', this.getOne);
-        this.router.put('/:name', this.update);
-        this.router.delete('/:name', this.deleteOne);
+        this.router.get('/:id', this.getOne);
+        this.router.put('/:id', this.update);
+        this.router.delete('/:id', this.deleteOne);
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {

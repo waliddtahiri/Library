@@ -4,10 +4,10 @@
         <mat-tab label="General Data">
             <div class="form">
                 <mat-form-field>
-                    <input matInput placeholder="Name" [formControl]="ctlName" required [readonly]="frm.value._id">
+                    <input matInput placeholder="Name" [formControl]="ctlName" required>
                     <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
                     <mat-error class="field-error" *ngIf="ctlName.hasError('NameUsed')">Name already in use</mat-error>
-                    <mat-error class="field-error" *ngIf="ctlName.hasError('forbiddenValue')">Forbidden value 'abc'</mat-error>
+                    <mat-error class="field-error" *ngIf="ctlName.hasError('forbiddenValue')">Forbidden value '123'</mat-error>
                 </mat-form-field>
             </div>
         </mat-tab>
