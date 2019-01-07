@@ -32,6 +32,8 @@ export class BookListComponent implements OnInit {
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
+
+
     constructor(private bookService: BookService, public rentalService: RentalService,
          public memberService: MemberCommonService,
          public categoryService: CategoryService,
@@ -53,6 +55,7 @@ export class BookListComponent implements OnInit {
             categories.forEach(c => {
               this.categoriesSource.push(c);
             });
+
        });
         }
 
@@ -73,6 +76,8 @@ export class BookListComponent implements OnInit {
         });
     }
 
+    filterValueBook: any;
+
     applyFilter(filterValue: string) {
         this.dataSource.filter = filterValue.trim().toLowerCase();
         if (this.dataSource.paginator) {
@@ -81,7 +86,12 @@ export class BookListComponent implements OnInit {
     }
 
     applyFilterCategory() {
+        console.log(this.selectedCategory);
+        if (this.selectedCategory === undefined) {
+            this.dataSource.filter = '';
+        } else {
         this.dataSource.filter = this.selectedCategory._id;
+        }
     }
 
     isEmpty(b: Book[] = []): Boolean {
@@ -126,8 +136,8 @@ export class BookListComponent implements OnInit {
     }
 
     private confirm_basket_admin() {
-        console.log('dfsfsdfsd')
-        console.log(new Date().toLocaleString())
+        console.log('dfsfsdfsd');
+        console.log(new Date().toLocaleString());
 
         const books = this.basketSource;
         const items = [];

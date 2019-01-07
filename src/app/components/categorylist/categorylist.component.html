@@ -6,8 +6,9 @@
 <br><br>
 <div class="row">
     <div class="col-sm-12">
-       <div class="mat-elevation-z2">
-            <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc" matSortDisableClear>
+        <div class="mat-elevation-z2">
+            <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc"
+                matSortDisableClear>
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
                     <td mat-cell *matCellDef="let row"> {{row.name}} </td>
@@ -33,8 +34,18 @@
     </div>
 </div>
 
-<div class="row mt-3">
-    <div class="col-12">
-        <button mat-raised-button (click)="create()">Add Category</button>
-    </div>
-</div>
+    <form id="frm" class="form" [formGroup]="frm" novalidate>
+        <div class="col-12">
+            <ng-container>
+                <mat-form-field class="input">
+                    <input class="input" matInput placeholder="Name" [formControl]="ctlName" required>
+                    <mat-error class="field-error" *ngIf="ctlName.hasError('required')">Required</mat-error>
+                    <mat-error class="field-error" *ngIf="ctlName.hasError('NameUsed')">Name already in use</mat-error>
+                    <mat-error class="field-error" *ngIf="ctlName.hasError('forbiddenValue')">Forbidden value '123'</mat-error>
+                </mat-form-field>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="submit" form="frm" class="btn btn-default mr-2" [disabled]="frm.pristine || frm.invalid || frm.pending"
+                    (click)="update()">{{frm.value._id ? 'Update' : 'Add'}}</button>
+            </ng-container>
+        </div>
+    </form>

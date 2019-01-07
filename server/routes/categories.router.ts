@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import Category from '../models/category';
+import Book from '../models/book';
 
 export class CategoriesRouter {
     public router: Router;
@@ -58,6 +59,9 @@ export class CategoriesRouter {
     public async deleteOne(req: Request, res: Response, next: NextFunction) {
         try {
             const category = await Category.findOneAndRemove({ name: req.params.id });
+            res = await Book.updateMany(
+            { _id: { $in: category.books } },
+            { $pull: { categories: category._id } });
             if (category != null) {
                 res.json(true);
             } else {
