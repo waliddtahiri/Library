@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit {
   dataSource: MatTableDataSource<Rental>;
   dataSourceAdmin: MatTableDataSource<Rental>;
   userRentals: Rental[] = [];
+  rentals: Rental[];
 
 
 
@@ -46,7 +47,6 @@ export class HomeComponent implements OnInit {
     public dialog: MatDialog, public snackBar: MatSnackBar) {
     this.memberCommonService.getOne(authService.currentUser).subscribe(m => {
       this.current = m;
-      m.rentals.forEach(r => this.userRentals.push(r));
     });
   }
 
@@ -167,30 +167,32 @@ export class HomeComponent implements OnInit {
 
   private edit(any: any) {
     const dlg = this.dialog.open(EditRentalComponent, { data: any });
-    dlg.beforeClose().subscribe( () =>
-      this.refresh()
-    );
+    dlg.beforeClose().subscribe(res => {
+      if (res) {
+          _.assign(any, res);
+          console.log(res);
+      }
+      this.refresh();
+      this.refresh();
+  });
   }
 
 
   refresh() {
     this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
-          rentals.forEach(
-          r => this.rentalService.getRentalByItem(r._id).subscribe(res => {
-          const array = res[0].items;
-          const val = array.find(i => i._id === r._id); // equivalent a getOne(item)
-          if (val.returnDate == null) {
-          this.dataSource = new MatTableDataSource(rentals);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          }
-        })
-      );
+            this.dataSource = new MatTableDataSource(rentals);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+            this.dataSource.filterPredicate = (data: any, fitlerString: string) => {
+              return data.returnDate === null;
+            };
+            this.dataSource.filter = "filtre";
     });
     this.rentalService.getAll().subscribe(rentals => {
       this.dataSourceAdmin = new MatTableDataSource(rentals);
       this.dataSourceAdmin.paginator = this.paginator;
       this.dataSourceAdmin.sort = this.sort;
+      console.log(this.dataSourceAdmin.data);
     });
   }
 

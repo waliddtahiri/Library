@@ -170,7 +170,6 @@ export class BookListComponent implements OnInit {
             if (res) {
                 _.assign(book, res);
             }
-            this.refresh();
         });
     }
 
