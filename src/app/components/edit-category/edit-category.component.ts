@@ -73,6 +73,7 @@ export class EditCategoryComponent implements OnInit {
 
     update() {
         const data = this.frm.value;
+
         if (data._id === undefined) {
             this.categoryService.add(data).subscribe(m => data._id = m._id);
         } else {

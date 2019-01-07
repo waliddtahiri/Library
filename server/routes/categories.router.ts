@@ -46,6 +46,7 @@ export class CategoriesRouter {
     }
 
     public async update(req: Request, res: Response, next: NextFunction) {
+        console.log('enfiiiiiin');
         try {
             const updatedCategory = await Category.findOneAndUpdate({ name: req.params.id },
                 req.body,

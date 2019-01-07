@@ -27,7 +27,6 @@ export class CategoryListComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
 
     constructor(private categoryService: CategoryService, private fb: FormBuilder,
-        public data: Category,
         public dialog: MatDialog, public snackBar: MatSnackBar) {
             this.ctlName = this.fb.control('', [Validators.required,
                 this.forbiddenValue('123')], [this.nameUsed()]);
@@ -35,7 +34,6 @@ export class CategoryListComponent implements OnInit {
                     _id: null,
                     name: this.ctlName,
                 });
-                
     }
 
     forbiddenValue(val: string): any {
@@ -87,12 +85,7 @@ export class CategoryListComponent implements OnInit {
     }
 
     private edit(category: Category) {
-        const dlg = this.dialog.open(EditCategoryComponent, { data: category });
-        dlg.beforeClose().subscribe(res => {
-            if (res) {
-                _.assign(category, res);
-            }
-        });
+        this.frm.patchValue(category);
     }
 
     private delete(category: Category) {
@@ -108,10 +101,17 @@ export class CategoryListComponent implements OnInit {
         });
     }
 
-    private add(string: string) {
-        const category = new Category({});
-        category.name = string;
-        this.categoryService.add(category).subscribe(m => category._id = category._id);
+    update() {
+        const data = this.frm.value;
+        console.log(data._id);
+        if (data._id === undefined || data._id === null) {
+            this.categoryService.add(data).subscribe(m => data._id = m._id);
+            console.log('slt');
+        } else {
+            this.categoryService.update(data).subscribe();
+            console.log('slt2');
+        }
+        this.refresh();
     }
 
 }
