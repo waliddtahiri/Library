@@ -46,7 +46,6 @@ export class CategoriesRouter {
     }
 
     public async update(req: Request, res: Response, next: NextFunction) {
-        console.log('enfiiiiiin');
         try {
             const updatedCategory = await Category.findOneAndUpdate({ _id: req.params.id },
                 req.body,
@@ -60,9 +59,6 @@ export class CategoriesRouter {
     public async deleteOne(req: Request, res: Response, next: NextFunction) {
         try {
             const category = await Category.findOneAndRemove({ name: req.params.id });
-            res = await Book.updateMany(
-            { _id: { $in: category.books } },
-            { $pull: { categories: category._id } });
             if (category != null) {
                 res.json(true);
             } else {

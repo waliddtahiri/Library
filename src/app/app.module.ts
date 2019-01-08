@@ -35,7 +35,6 @@ import { BookListComponent } from './components/booklist/booklist.component';
 import { CategoryListComponent } from './components/categorylist/categorylist.component';
 import { EditBookComponent } from './components/edit-book/edit-book.component';
 import { EditRentalComponent } from './components/edit-rental/edit-rental.component';
-import { EditCategoryComponent } from './components/edit-category/edit-category.component';
 import { DatePipe } from '@angular/common';
 
 export function tokenGetter() {
@@ -58,10 +57,9 @@ export function tokenGetter() {
         EditMemberComponent,
         EditBookComponent,
         EditRentalComponent,
-        EditCategoryComponent,
         SetFocusDirective,
     ],
-    entryComponents: [EditMemberComponent, EditBookComponent,EditRentalComponent, EditCategoryComponent],
+    entryComponents: [EditMemberComponent, EditBookComponent,EditRentalComponent],
     imports: [
         HttpClientModule,
         BrowserModule,

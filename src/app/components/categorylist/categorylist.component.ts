@@ -3,7 +3,6 @@ import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, 
 import { Category, CategoryService } from '../../services/category.service';
 import { Inject } from '@angular/core';
 import * as moment from 'moment';
-import { EditCategoryComponent } from '../edit-category/edit-category.component';
 import * as _ from 'lodash';
 import { FormGroup } from '@angular/forms';
 import { FormControl } from '@angular/forms';
