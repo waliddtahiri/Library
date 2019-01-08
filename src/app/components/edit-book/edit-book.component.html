@@ -1,9 +1,9 @@
 <form id="frm" class="form" [formGroup]="frm" novalidate>
     <ng-container *ngIf="authService.isAdmin">
-    <h1 class="header">{{(frm.value._id ? 'Edit existing' : 'Add a new') + ' book'}}</h1>
+        <h1 class="header">{{(frm.value._id ? 'Edit existing' : 'Add a new') + ' book'}}</h1>
     </ng-container>
     <ng-container *ngIf="!authService.isAdmin">
-    <h1 class="header">Book's informations</h1>
+        <h1 class="header">Book's informations</h1>
     </ng-container>
     <mat-tab-group mat-stretch-tabs dynamicHeight>
         <mat-tab label="General Data">
@@ -32,38 +32,51 @@
             <div class="picture-container">
                 <img class="img-responsive" [src]="picturePath" width="200px">
                 <ng-container *ngIf="authService.isAdmin">
-                <input type="file" [readonly]="!authService.isAdmin" (change)="fileChange($event)" placeholder="Upload file" accept=".png,.jpg,.gif">
+                    <input type="file" [readonly]="!authService.isAdmin" (change)="fileChange($event)" placeholder="Upload file"
+                        accept=".png,.jpg,.gif">
                 </ng-container>
             </div>
         </mat-tab>
         <mat-tab label="Categories" class="catblock">
-            <div class="block">
-              <div><h6>Available</h6> </div>
-              <mat-selection-list #allCategories (selectionChange)="onSelectionleft($event, allCategories.selectedOptions.selected)">
-                  <mat-list-option *ngFor="let Category of categoriesSource" [value] = "Category" > {{ Category.name }}
-                  </mat-list-option>
-              </mat-selection-list>     
-            </div>
-            <ng-container *ngIf="authService.isAdmin">
-            <div class="block">
-                    <button class="btn" [disabled]="isCatSelected(allCategories.selectedOptions.selected.length)" mat-stroked-button (click)="addToBook()"> >> </button>
-                    <button class="btn" [disabled]="isCatSelected(bookCategories.selectedOptions.selected.length)" mat-stroked-button (click)="removeFromBook()"> << </button>
-            </div>
-            </ng-container>
-            <ng-container *ngIf="!authService.isAdmin"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </ng-container>
-            <div class="block">
-                    <div><h6>Associated to a book</h6> </div>
-                    <mat-selection-list #bookCategories (selectionChange)="onSelectionright($event, bookCategories.selectedOptions.selected)">
-                        <mat-list-option *ngFor="let Category of categoriesBook" [value] = "Category"> {{ Category.name }}
+            <br>
+            <ng-container>
+                <div style="float:left;">
+                    <h6>Available</h6>
+                    <mat-selection-list style="width:170px;" #allCategories (selectionChange)="onSelectionleft($event, allCategories.selectedOptions.selected)">
+                        <mat-list-option style="width:170px;" *ngFor="let Category of categoriesSource" [value]="Category">
+                            {{ Category.name}}
                         </mat-list-option>
-                    </mat-selection-list>     
-             </div>
+                    </mat-selection-list>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="authService.isAdmin">
+                <div style="position:absolute; overflow: hidden; width:90px; margin-top:50px; margin-left:197.5px;">
+                    <button class="btn" [disabled]="isCatSelected(allCategories.selectedOptions.selected.length)"
+                        mat-stroked-button (click)="addToBook()"> >> </button>
+                    <button class="btn" [disabled]="isCatSelected(bookCategories.selectedOptions.selected.length)"
+                        mat-stroked-button (click)="removeFromBook()">
+                        << </button> 
+                </div> 
+            </ng-container>
+            <ng-container>
+                <div style="float:right; margin-left:20px">
+                    <h6>Associated to a book</h6>
+                    <mat-selection-list style="width:170px;" #bookCategories (selectionChange)="onSelectionright($event, bookCategories.selectedOptions.selected)">
+                        <mat-list-option style="width:170px;" *ngFor="let Category of categoriesBook" [value]="Category">
+                            {{ Category.name
+                            }}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </ng-container>
         </mat-tab>
     </mat-tab-group>
+    <br>
     <ng-container *ngIf="authService.isAdmin">
-    <div class="footer">
-        <button type="submit" form="frm" class="btn btn-default mr-2" [disabled]="frm.pristine || frm.invalid || frm.pending " (click)="update()">{{frm.value._id ? 'Update' : 'Add'}}</button>
-        <button type="reset" class="btn btn-default" (click)="cancel()">Cancel</button>
-    </div>
+        <div class="footer">
+            <button type="submit" form="frm" class="btn btn-default mr-2" [disabled]="frm.pristine || frm.invalid || frm.pending "
+                (click)="update()">{{frm.value._id ? 'Update' : 'Add'}}</button>
+            <button type="reset" class="btn btn-default" (click)="cancel()">Cancel</button>
+        </div>
     </ng-container>
 </form>

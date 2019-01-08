@@ -91,7 +91,7 @@ export class CategoryListComponent implements OnInit {
     private delete(category: Category) {
         const backup = this.dataSource.data;
         this.dataSource.data = _.filter(this.dataSource.data, c => c._id !== category._id);
-        const snackBarRef = this.snackBar.open(`Category  '${category.name}'  will be deleted`, 'Undo', { duration: 10000 });
+        const snackBarRef = this.snackBar.open(`Category  '${category.name}'  will be deleted`, 'Undo', { duration: 3000 });
         snackBarRef.afterDismissed().subscribe(res => {
             if (!res.dismissedByAction) {
                 this.categoryService.delete(category).subscribe();
@@ -103,7 +103,6 @@ export class CategoryListComponent implements OnInit {
 
     update() {
         const data = this.frm.value;
-        console.log(data._id);
         if (data._id === undefined || data._id === null) {
             this.categoryService.add(data).subscribe(m => data._id = m._id);
             console.log('slt');
@@ -111,6 +110,7 @@ export class CategoryListComponent implements OnInit {
             this.categoryService.update(data).subscribe();
             console.log('slt2');
         }
+        this.frm.reset();
         this.refresh();
     }
 

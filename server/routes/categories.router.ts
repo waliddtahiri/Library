@@ -48,7 +48,7 @@ export class CategoriesRouter {
     public async update(req: Request, res: Response, next: NextFunction) {
         console.log('enfiiiiiin');
         try {
-            const updatedCategory = await Category.findOneAndUpdate({ name: req.params.id },
+            const updatedCategory = await Category.findOneAndUpdate({ _id: req.params.id },
                 req.body,
                 { new: true });  // pour renvoyer le document modifié
             res.json(updatedCategory);

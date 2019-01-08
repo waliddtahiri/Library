@@ -45,7 +45,7 @@ export class CategoryService {
     }
 
     public update(c: Category): Observable<boolean> {
-        return this.http.put<Category>(URL + c.name, c).pipe(
+        return this.http.put<Category>(URL + c._id, c).pipe(
             map(res => true),
             catchError(err => {
                 console.error(err);
