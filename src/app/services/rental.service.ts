@@ -36,8 +36,8 @@ export class RentalService {
         );
     }
 
-    public getOne(pseudo: String): Observable<Rental[]> {
-        return this.http.get<Rental[]>(URL + pseudo).pipe(
+    public getOne(pseudo: String): Observable<any[]> {
+        return this.http.get<any[]>(URL + pseudo).pipe(
             catchError(err => {
                 console.error(err);
                 return of(null);
@@ -83,6 +83,13 @@ export class RentalService {
         );
     }
     
-
+    public getCount(pseudo: String){
+        return this.http.get<number>(URL + pseudo).pipe(
+            catchError(err => {
+                console.error(err);
+                return of(-1);
+            })
+        );
+    }
    
 }

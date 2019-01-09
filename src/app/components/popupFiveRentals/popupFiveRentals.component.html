@@ -1,0 +1,12 @@
+<ng-container *ngIf="authService.isAdmin">
+  <div mat-dialog-content> Ce membre loue déjà 5 livres.</div>
+  <div mat-dialog-actions>
+    <button style="margin-left:60px;" mat-button (click)="dialogRef.close(true)">OK</button>
+  </div>
+</ng-container>
+<ng-container *ngIf="!authService.isAdmin">
+  <div mat-dialog-content>Vous ne pouvez louer plus de 5 livres.</div>
+  <div mat-dialog-actions>
+    <button style="margin-left:85px;" mat-button (click)="dialogRef.close(true)">OK</button>
+  </div>
+</ng-container>

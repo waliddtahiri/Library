@@ -8,11 +8,11 @@ import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { Category, CategoryService } from '../../services/category.service';
 import * as _ from 'lodash';
-import {ChangeDetectionStrategy} from '@angular/core';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Member } from '../../services/member.service';
 import { BookCommonService } from '../../services/book-common.service';
 import { AuthService } from '../../services/auth.service';
-import { MemberCommonService} from '../../services/member-common.service';
+import { MemberCommonService } from '../../services/member-common.service';
 
 
 @Component({
@@ -27,7 +27,6 @@ export class EditBookComponent implements OnInit {
     public ctlAuthor: FormControl;
     public ctlTitle: FormControl;
     public ctlEditor: FormControl;
-    public ctlCategory: FormControl;
     public categories;
     public current: Member;
     categoriesSource: Category[] = [];
@@ -52,7 +51,6 @@ export class EditBookComponent implements OnInit {
         this.ctlAuthor = this.fb.control('', [Validators.required]);
         this.ctlTitle = this.fb.control('', [Validators.required]);
         this.ctlEditor = this.fb.control('', [Validators.required]);
-        this.ctlCategory = this.fb.control('', []);
         this.frm = this.fb.group({
             _id: null,
             isbn: this.ctlIsbn,
@@ -108,9 +106,10 @@ export class EditBookComponent implements OnInit {
     }
 
     update() {
-        console.log('update');
         const data = this.frm.value;
+        if(data._id !== undefined){
         data.categories = this.categoriesBook;
+        }
 
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
             this.bookCommonService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
@@ -156,7 +155,7 @@ export class EditBookComponent implements OnInit {
     }
 
 
-    isCatSelected( val: any) {
+    isCatSelected(val: any) {
         if (val > 0) {
             return 'false';
         } else {
@@ -170,60 +169,62 @@ export class EditBookComponent implements OnInit {
 
         v.forEach(c => {
             this.selectionTableft.push(c.value);
-          });
+        });
 
         console.log(v.length);
-     }
+    }
 
-     onSelectionright(e, v) {
+    onSelectionright(e, v) {
         this.selectionTabright = [];
 
         v.forEach(c => {
             this.selectionTabright.push(c.value);
-          });
+        });
 
         console.log(v.length);
-     }
+    }
 
-     addToBook() {
+    addToBook() {
         this.selectionTableft.forEach(c => {
             c.books.push(this.data);
             this.categoriesBook.push(c);
             const index = this.categoriesSource.indexOf(c);
             this.categoriesSource.splice(index, 1);
-          });
-          this.selectionTableft = [];
-          this.frm.markAsDirty();
-     }
+        });
+        this.selectionTableft = [];
+        this.frm.markAsDirty();
+    }
 
-     removeFromBook () {
+    removeFromBook() {
         this.selectionTabright.forEach(c => {
             this.categoriesSource.push(c);
             const index = this.categoriesBook.indexOf(c);
             this.categoriesBook.splice(index, 1);
             const index2 = c.books.indexOf(this.data);
             c.books.splice(index2, 1);
-          });
-          this.selectionTabright = [];
-          this.frm.markAsDirty();
-     }
+        });
+        this.selectionTabright = [];
+        this.frm.markAsDirty();
+    }
 
 
 
-     initTab () {
-         // on initialise les tableaux categories
-        this.categoryService.getAll().subscribe(cat => {
-            cat.forEach(c => {
-                this.data.categories.forEach(c2 => {
-                    if (c._id === c2.toString()) {
-                        this.categoriesBook.push(c);
-                    }
-                  });
-                  if (!this.categoriesBook.includes(c)) {
-                    this.categoriesSource.push(c);
+    initTab() {
+        // on initialise les tableaux categories
+        if (this.data._id !== undefined) {
+            this.categoryService.getAll().subscribe(cat => {
+                cat.forEach(c => {
+                    this.data.categories.forEach(c2 => {
+                        if (c._id === c2.toString()) {
+                            this.categoriesBook.push(c);
+                        }
+                    });
+                    if (!this.categoriesBook.includes(c)) {
+                        this.categoriesSource.push(c);
                     }
                 });
             });
-     }
+        }
+    }
 }
 

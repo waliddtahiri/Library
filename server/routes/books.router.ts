@@ -36,7 +36,6 @@ export class BooksRouter {
         // _id vient avec la valeur nulle d'angular (via reactive forms) => on doit l'enlever pour qu'il reçoive une valeur
         delete req.body._id;
         try {
-            const { isbn, author, title, editor } = req.body;
             const book = new Book (req.body);
             const newBook = await book.save();
             res.json(newBook);

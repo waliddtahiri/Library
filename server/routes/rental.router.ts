@@ -13,7 +13,17 @@ export class RentalRouter {
         this.router.get('/member/rental/item/:id', this.getRentalByItem);
         this.router.delete('/:id', this.deleteOne);
         this.router.put('/:id', this.update);
+        this.router.get('/:pseudo', this.getCount);
+    }
 
+    public async getCount(req: Request, res: Response, next: NextFunction) {
+        try {
+            const rental = await Rental.findById({'member' : req.params.id});
+            const count = rental.items.length - 1;
+            res.json(count);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
     public async update(req: Request, res: Response, next: NextFunction) {

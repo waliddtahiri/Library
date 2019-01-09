@@ -140,7 +140,7 @@ export class HomeComponent implements OnInit {
       return b._id !== any._id;
     });
 
-    const snackBarRef = this.snackBar.open('The rental  will be deleted', 'Undo', { duration: 5000 });
+    const snackBarRef = this.snackBar.open('The rental  will be deleted', 'Undo', { duration: 1000 });
     snackBarRef.afterDismissed().subscribe(res => {
       if (!res.dismissedByAction) {
 
@@ -148,11 +148,10 @@ export class HomeComponent implements OnInit {
           console.log(res);
           let array = res[0].items;
           let val = array.find(i => i._id === any._id); //equivalent a getOne(item)
-
           const index = res[0].items.indexOf(val);
-          if (index > -1) {
-            res[0].items.splice(index, 1);
-          }
+
+          res[0].items.splice(index, 1);
+          this.rentalService.update(res[0]).subscribe();
 
           if (res[0].items.length === 0) {
             this.rentalService.delete(res[0]).subscribe();
@@ -169,24 +168,24 @@ export class HomeComponent implements OnInit {
     const dlg = this.dialog.open(EditRentalComponent, { data: any });
     dlg.beforeClose().subscribe(res => {
       if (res) {
-          _.assign(any, res);
-          console.log(res);
+        _.assign(any, res);
+        console.log(res);
       }
       this.refresh();
       this.refresh();
-  });
+    });
   }
 
 
   refresh() {
     this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
-            this.dataSource = new MatTableDataSource(rentals);
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-            this.dataSource.filterPredicate = (data: any, fitlerString: string) => {
-              return data.returnDate === null;
-            };
-            this.dataSource.filter = "filtre";
+      this.dataSource = new MatTableDataSource(rentals);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = (data: any, fitlerString: string) => {
+        return data.returnDate === null;
+      };
+      this.dataSource.filter = "filtre";
     });
     this.rentalService.getAll().subscribe(rentals => {
       this.dataSourceAdmin = new MatTableDataSource(rentals);

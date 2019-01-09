@@ -104,10 +104,8 @@ export class CategoryListComponent implements OnInit {
         const data = this.frm.value;
         if (data._id === undefined || data._id === null) {
             this.categoryService.add(data).subscribe(m => data._id = m._id);
-            console.log('slt');
         } else {
             this.categoryService.update(data).subscribe();
-            console.log('slt2');
         }
         this.frm.reset();
         this.refresh();
