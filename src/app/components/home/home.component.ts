@@ -1,5 +1,5 @@
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatSnackBar, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE,
    MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { AuthService } from '../../services/auth.service';
@@ -59,6 +59,7 @@ export class HomeComponent implements OnInit {
   constructor(public authService: AuthService,
     public memberCommonService: MemberCommonService,
     public rentalService: RentalService,
+    private changeDetectorRefs: ChangeDetectorRef,
     public memberService: MemberService,
     public dialog: MatDialog, public snackBar: MatSnackBar, private datePipe: DatePipe) {
     this.memberCommonService.getOne(authService.currentUser).subscribe(m => {
@@ -91,7 +92,6 @@ export class HomeComponent implements OnInit {
 
   getAllRentals() {
     this.rentalService.getAll().subscribe(rentals => {
-      console.log(rentals)
       this.dataSourceAdmin = new MatTableDataSource(rentals);
       this.dataSourceAdmin.filterPredicate = this.createFilter();
       this.dataSourceAdmin.paginator = this.paginator;
@@ -136,16 +136,16 @@ export class HomeComponent implements OnInit {
 
   private edit(any: any) {
     const dlg = this.dialog.open(EditRentalComponent, { data: any });
-    dlg.beforeClose().subscribe(res => {
-      if (res) {
-        _.assign(any, res);
-        console.log(res);
-      }
-      this.refresh();
-      this.refresh();
+    dlg.afterClosed().subscribe(res => {
+      this.rentalService.getAll().subscribe(rentals => {
+        this.dataSourceAdmin = new MatTableDataSource(rentals);
+      });
     });
   }
 
+  refreshReturnDate(){
+      this.changeDetectorRefs.detectChanges(); 
+  }
 
   refresh() {
     this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
@@ -195,6 +195,7 @@ export class HomeComponent implements OnInit {
     };
     return filterFunction;
   }
+
 filterDateAndRadio() {
     this.dataSourceAdmin.data = this.backup;
     if (this.radioFilter === 'open') { // open

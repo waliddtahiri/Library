@@ -35,6 +35,7 @@ import { BookListComponent } from './components/booklist/booklist.component';
 import { CategoryListComponent } from './components/categorylist/categorylist.component';
 import { EditBookComponent } from './components/edit-book/edit-book.component';
 import { EditRentalComponent } from './components/edit-rental/edit-rental.component';
+import { popCategoryDeleteComponent } from './components/popCategoryDelete/popCategoryDelete.component';
 import { popupFiveRentalsComponent } from './components/popupFiveRentals/popupFiveRentals.component';
 import { DatePipe } from '@angular/common';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -60,9 +61,10 @@ export function tokenGetter() {
         EditBookComponent,
         EditRentalComponent,
         popupFiveRentalsComponent,
+        popCategoryDeleteComponent,
         SetFocusDirective,
     ],
-    entryComponents: [EditMemberComponent, EditBookComponent,EditRentalComponent, popupFiveRentalsComponent],
+    entryComponents: [EditMemberComponent, EditBookComponent,EditRentalComponent, popupFiveRentalsComponent, popCategoryDeleteComponent],
     imports: [
         HttpClientModule,
         BrowserModule,

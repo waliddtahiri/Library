@@ -1,7 +1,7 @@
 <form id="frm" class="form" [formGroup]="frm" novalidate>
-    <h1 class="header">Enter today as return date ?</h1>
-    <div class="footer">
-        <button type="submit" form="frm" class="btn btn-default mr-2" (click)="update()">Yes</button>
-        <button type="reset" class="btn btn-default" (click)="cancel()">No</button>
+    <div mat-dialog-content>Enter today as return date ?</div>
+    <div mat-dialog-actions>
+        <button style="margin-left:6px;" type="submit" form="frm" mat-button (click)="update()">Yes</button>
+        <button type="reset" mat-button (click)="cancel()">No</button>
     </div>
 </form>

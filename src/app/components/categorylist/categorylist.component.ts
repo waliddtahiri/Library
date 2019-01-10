@@ -8,6 +8,7 @@ import { FormGroup } from '@angular/forms';
 import { FormControl } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
+import { popCategoryDeleteComponent } from '../popCategoryDelete/popCategoryDelete.component';
 
 @Component({
     selector: 'app-categorylist-mat',
@@ -27,12 +28,12 @@ export class CategoryListComponent implements OnInit {
 
     constructor(private categoryService: CategoryService, private fb: FormBuilder,
         public dialog: MatDialog, public snackBar: MatSnackBar) {
-            this.ctlName = this.fb.control('', [Validators.required,
-                this.forbiddenValue('123')], [this.nameUsed()]);
-                this.frm = this.fb.group({
-                    _id: null,
-                    name: this.ctlName,
-                });
+        this.ctlName = this.fb.control('', [Validators.required,
+        this.forbiddenValue('123')], [this.nameUsed()]);
+        this.frm = this.fb.group({
+            _id: null,
+            name: this.ctlName,
+        });
     }
 
     forbiddenValue(val: string): any {
@@ -88,17 +89,12 @@ export class CategoryListComponent implements OnInit {
     }
 
     private delete(category: Category) {
-        const backup = this.dataSource.data;
-        this.dataSource.data = _.filter(this.dataSource.data, c => c._id !== category._id);
-        const snackBarRef = this.snackBar.open(`Category  '${category.name}'  will be deleted`, 'Undo', { duration: 3000 });
-        snackBarRef.afterDismissed().subscribe(res => {
-            if (!res.dismissedByAction) {
-                this.categoryService.delete(category).subscribe();
-            } else {
-                this.dataSource.data = backup;
-            }
+        const dlg = this.dialog.open(popCategoryDeleteComponent, { data: category });
+        dlg.beforeClose().subscribe(() => {
+            this.refresh();
         });
     }
+
 
     update() {
         const data = this.frm.value;

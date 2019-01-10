@@ -53,7 +53,7 @@ export class EditRentalComponent implements OnInit {
             }
             this.rentalService.update(res[0]).subscribe();
         });
-        this.dialogRef.close();
+        this.dialogRef.close(data);
     }
 
 
