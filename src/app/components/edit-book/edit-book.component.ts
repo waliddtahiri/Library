@@ -130,7 +130,7 @@ export class EditBookComponent implements OnInit {
         // Le compteur updateCounter sert à générer un URL différent quand on change d'image
         // car sinon l'image ne se rafraîchit pas parce que l'url ne change pas.
         return this.tempPicturePath && this.tempPicturePath !== '' ?
-            (this.tempPicturePath + '?' + this.updateCounter) : 'uploads/cover.png';
+            (this.tempPicturePath + '?' + this.updateCounter) : 'uploads/cover.jpg';
     }
 
     fileChange(event) {

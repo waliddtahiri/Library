@@ -74,7 +74,7 @@ export class BookListComponent implements OnInit {
     }
 
     formatDate() {
-        const date = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        const date = this.datePipe.transform(new Date(), 'yyyy-M-dd');
         return date;
     }
 
@@ -137,7 +137,7 @@ export class BookListComponent implements OnInit {
             });
         });
         if (this.basketSource.length > 0) {
-            const rental = new Rental({ member: this.current, orderDate: new Date() });
+            const rental = new Rental({ member: this.current, orderDate: this.formatDate() });
             books.forEach(b => items.push({ book: b, returnDate: null }));
             rental.items = items;
             if (this.rentalCount.length + this.basketSource.length <= 5) {
@@ -176,19 +176,33 @@ export class BookListComponent implements OnInit {
                 this.selectedMember.rentals.push(res);
                 this.memberService.update(this.selectedMember).subscribe();
             });
-            this.clear_basket();
+            this.clear_basket_admin();
         }
         else {
             const dlg = this.dialog.open(popupFiveRentalsComponent);
             dlg.beforeClose().subscribe(res => {
-                this.clear_basket();
+                this.clear_basket_admin();
             });
             this.rentalCountAdmin.splice(this.rentalCountAdmin.length);
         }
         }
     }
 
-    private clear_basket() {
+    private clear_basket(){
+        this.refresh();
+        this.basketSource = _.filter(this.basketSource.splice(this.basketSource.length));
+        this.rentalCount = [];
+        this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
+            rentals.forEach(r => {
+                if (r.returnDate == null) {
+                    this.rentalCount.push(r);
+                    console.log(this.rentalCount.length);
+                }
+            });
+        });
+    }
+
+    private clear_basket_admin() {
         this.refresh();
         this.basketSource = _.filter(this.basketSource.splice(this.basketSource.length));
         this.rentalCountAdmin = [];

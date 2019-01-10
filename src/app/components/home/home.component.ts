@@ -143,9 +143,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  refreshReturnDate(){
-      this.changeDetectorRefs.detectChanges(); 
-  }
 
   refresh() {
     this.rentalService.getOne(this.authService.currentUser).subscribe(rentals => {
