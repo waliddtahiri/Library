@@ -6,6 +6,7 @@ import { pipe } from 'rxjs';
 import * as multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as jwt from 'jsonwebtoken';
 
 const UPLOAD_DIR = './uploads/';
 
@@ -32,6 +33,7 @@ export class MembersCommonRouter {
         this.router.post('/upload', upload.single('picture'), this.upload);
         this.router.post('/confirm', this.confirm);
         this.router.post('/cancel', this.cancel);
+        this.router.post('/create', this.create);
         this.router.put('/:id', this.updateMember);
     }
 
@@ -75,6 +77,16 @@ export class MembersCommonRouter {
         }
     }
 
+    public async create(req: Request, res: Response, next: NextFunction) {
+        console.log('rentre dans create du routeur');
+        const member = new Member(req.body);
+        const token = jwt.sign({ pseudo: req.body.pseudo }, 'my-super-secret-key', { expiresIn: 60 });
+        member.save()
+            .then(member => res.json({ member: member, success: true, message: 'logged in', token: token }))
+            .catch(err => res.status(500).send(err));
+
+    }
+
     public async update(req: Request, res: Response, next: NextFunction) {
         if (!req.body.hasOwnProperty('picturePath')) {
             console.error('No picturePath received');
@@ -91,44 +103,6 @@ export class MembersCommonRouter {
         }
     }
 
-    // /*
-    //  * follow: version qui utilise les promises explicitement et qui parall�lise les queries
-    //  */
-    // public follow(req: Request, res: Response, next: NextFunction) {
-    //     const currentUser = req['decoded'].pseudo;
-    //     Promise.all([
-    //         Member.findOne({ pseudo: currentUser }),
-    //         Member.findOne({ pseudo: req.body.followee })
-    //     ])
-    //         .then(([follower, followee]) => {
-    //             follower.followees.push(followee);
-    //             followee.followers.push(follower);
-    //             return Promise.all([
-    //                 Member.findByIdAndUpdate(followee._id, followee),
-    //                 Member.findByIdAndUpdate(follower._id, follower)
-    //             ]);
-    //         })
-    //         .then(() => res.json(true))
-    //         .catch(err => res.status(500).send(err));
-    // }
-
-    // /*
-    //  * follow: version qui utilise async/await mais qui fait les queries en s�quence (moins performant)
-    //  */
-    // public async follow(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const currentUser = req['decoded'].pseudo;
-    //         const follower = await Member.findOne({ pseudo: currentUser });
-    //         const followee = await Member.findOne({ pseudo: req.body.followee });
-    //         follower.followees.push(followee);
-    //         followee.followers.push(follower);
-    //         await Member.findByIdAndUpdate(followee._id, followee);
-    //         await Member.findByIdAndUpdate(follower._id, follower);
-    //         res.json(true);
-    //     } catch (err) {
-    //         res.status(500).send(err);
-    //     }
-    // }
 
     public upload(req: Request, res: Response, next: NextFunction) {
         const file = req['file'];

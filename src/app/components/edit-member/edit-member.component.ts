@@ -82,7 +82,7 @@ export class EditMemberComponent implements OnInit {
                     if (ctl.pristine) {
                         resolve(null);
                     } else {
-                        this.memberCommonService.getOne(pseudo).subscribe(member => {
+                        this.memberService.getOne(pseudo).subscribe(member => {
                             resolve(member ? { pseudoUsed: true } : null);
                         });
                     }
@@ -102,7 +102,7 @@ export class EditMemberComponent implements OnInit {
         const data = this.frm.value;
         data.phones = this.phones;
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.pseudo)) {
-            this.memberCommonService.confirmPicture(data.pseudo, this.tempPicturePath).subscribe();
+            this.memberService.confirmPicture(data.pseudo, this.tempPicturePath).subscribe();
             data.picturePath = 'uploads/' + data.pseudo;
         }
         if (data._id === undefined) {
@@ -116,7 +116,7 @@ export class EditMemberComponent implements OnInit {
     cancelTempPicture() {
         const data = this.frm.value;
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.pseudo)) {
-            this.memberCommonService.cancelPicture(this.tempPicturePath).subscribe();
+            this.memberService.cancelPicture(this.tempPicturePath).subscribe();
         }
     }
 
@@ -143,7 +143,7 @@ export class EditMemberComponent implements OnInit {
         const fileList: FileList = event.target.files;
         if (fileList.length > 0) {
             const file = fileList[0];
-            this.memberCommonService.uploadPicture(this.frm.value.pseudo || 'empty', file).subscribe(path => {
+            this.memberService.uploadPicture(this.frm.value.pseudo || 'empty', file).subscribe(path => {
                 this.cancelTempPicture();
                 this.tempPicturePath = path;
                 this.frm.markAsDirty();

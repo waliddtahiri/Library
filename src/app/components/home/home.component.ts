@@ -1,9 +1,7 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {
-  MatPaginator, MatSort, MatTableDataSource, MatDialog, MAT_DIALOG_DATA, MatDialogRef,
-  MatRadioChange, MatRadioButton, MatSnackBar
-} from '@angular/material';
+import { MatTableDataSource, MatSnackBar, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE,
+   MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { AuthService } from '../../services/auth.service';
 import { MemberCommonService } from '../../services/member-common.service';
 import { Member, MemberService } from '../../services/member.service';
@@ -17,22 +15,40 @@ import { Db } from 'mongodb';
 import { FormControl } from '@angular/forms';
 import { EditRentalComponent } from '../edit-rental/edit-rental.component';
 import * as _ from 'lodash';
+import { DatePipe } from '@angular/common';
+import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 
 @Component({
   selector: 'app-home-mat',
   templateUrl: 'home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  providers: [
+
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
+  ],
 })
+
 export class HomeComponent implements OnInit {
   public current: Member;
   private updateCounter = new Date().getTime();
   displayedColumnsAdmin: string[] = ['orderDate', 'member.pseudo', 'book.title', 'returnDate', 'actions'];
   displayedColumns: string[] = ['orderDate', 'book.title'];
   dataSource: MatTableDataSource<Rental>;
-  dataSourceAdmin: MatTableDataSource<Rental>;
+  dataSourceAdmin: MatTableDataSource<any>;
   userRentals: Rental[] = [];
   rentals: Rental[];
+  memberFilter = new FormControl('');
+  bookFilter = new FormControl('');
+  dateFilter: Date = null;
+  radioFilter: string;
+  backup: any[];
+  filterValues = {
+    member: '',
+    book: '',
+  };
 
 
 
@@ -44,7 +60,7 @@ export class HomeComponent implements OnInit {
     public memberCommonService: MemberCommonService,
     public rentalService: RentalService,
     public memberService: MemberService,
-    public dialog: MatDialog, public snackBar: MatSnackBar) {
+    public dialog: MatDialog, public snackBar: MatSnackBar, private datePipe: DatePipe) {
     this.memberCommonService.getOne(authService.currentUser).subscribe(m => {
       this.current = m;
     });
@@ -53,84 +69,38 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit() {
-    this.refresh();
+
+    this.getAllRentals();
+    this.memberFilter.valueChanges
+      .subscribe(
+        member => {
+          this.filterValues.member = member;
+          this.dataSourceAdmin.filter = JSON.stringify(this.filterValues);
+        }
+      );
+    this.bookFilter.valueChanges
+      .subscribe(
+        book => {
+          this.filterValues.book = book;
+          this.dataSourceAdmin.filter = JSON.stringify(this.filterValues);
+        }
+      );
+
+      this.refresh();
   }
 
-  applyFilter(filterValue: string) {
-    console.log(filterValue);
-    this.dataSourceAdmin.filter = filterValue.trim().toLowerCase();
-    /*  if (this.dataSource.paginator) {
-          this.dataSource.paginator.firstPage();
-      } */
+  getAllRentals() {
+    this.rentalService.getAll().subscribe(rentals => {
+      console.log(rentals)
+      this.dataSourceAdmin = new MatTableDataSource(rentals);
+      this.dataSourceAdmin.filterPredicate = this.createFilter();
+      this.dataSourceAdmin.paginator = this.paginator;
+      this.dataSourceAdmin.sort = this.sort;
+      this.backup = rentals; 
+    });
+    
   }
 
-
-  filterValueMember: any;
-
-  memberFilter(filterValue: string) {
-    console.log(filterValue);
-    this.filterValueMember = filterValue.trim().toLowerCase();
-    if (this.filterValueMember !== '') {
-      this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-        if (this.filterValueMember !== '' && this.filterValueBook !== undefined) {
-          return data.member.pseudo.trim().toLowerCase().startsWith(this.filterValueMember) &&
-            data.book.title.trim().toLowerCase().startsWith(this.filterValueBook);
-        }
-        else if (this.filterValueMember !== '') {
-          return data.member.pseudo.trim().toLowerCase().startsWith(this.filterValueMember);
-
-        }
-      };
-      this.dataSourceAdmin.filter = filterValue;
-    }
-    else {
-      this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-        if (this.filterValueBook !== '') {
-          return data.book.title.trim().toLowerCase().startsWith(this.filterValueBook);
-
-        }
-
-      };
-      this.dataSourceAdmin.filter = this.filterValueBook;
-
-    }
-  }
-
-  filterValueBook: any;
-  bookFilter(filterValue: string) {
-    this.filterValueBook = filterValue.trim().toLowerCase();
-    if (this.filterValueBook !== '') {
-      this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-        if (this.filterValueBook !== '' && this.filterValueMember !== undefined) {
-          return data.book.title.trim().toLowerCase().startsWith(this.filterValueBook) &&
-            data.member.pseudo.trim().toLowerCase().startsWith(this.filterValueMember);
-        } else if (this.filterValueBook !== '') {
-          return data.book.title.trim().toLowerCase().startsWith(this.filterValueBook);
-        }
-      };
-      this.dataSourceAdmin.filter = filterValue;
-    } else {
-      this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-        if (this.filterValueMember !== '') {
-          return data.member.pseudo.trim().toLowerCase().startsWith(this.filterValueMember);
-        }
-      };
-      this.dataSourceAdmin.filter = this.filterValueMember;
-
-    }
-  }
-
-  filterValueDate: any;
-  dateFilter(filterValue: Date) {
-    // console.log(filterValue);
-    this.filterValueDate = filterValue;
-
-    this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-      return new Date(data.orderDate).getTime() >= new Date(filterValue).getTime();
-    };
-    this.dataSourceAdmin.filter = this.filterValueDate;
-
-  }
 
 
   private delete(any: any) {
@@ -140,7 +110,7 @@ export class HomeComponent implements OnInit {
       return b._id !== any._id;
     });
 
-    const snackBarRef = this.snackBar.open('The rental  will be deleted', 'Undo', { duration: 1000 });
+    const snackBarRef = this.snackBar.open('The rental  will be deleted', 'Undo', { duration: 5000 });
     snackBarRef.afterDismissed().subscribe(res => {
       if (!res.dismissedByAction) {
 
@@ -187,12 +157,7 @@ export class HomeComponent implements OnInit {
       };
       this.dataSource.filter = "filtre";
     });
-    this.rentalService.getAll().subscribe(rentals => {
-      this.dataSourceAdmin = new MatTableDataSource(rentals);
-      this.dataSourceAdmin.paginator = this.paginator;
-      this.dataSourceAdmin.sort = this.sort;
-      console.log(this.dataSourceAdmin.data);
-    });
+    
   }
 
 
@@ -200,15 +165,16 @@ export class HomeComponent implements OnInit {
     const fileList: FileList = event.target.files;
     if (fileList.length > 0) {
       const file: File = fileList[0];
-      this.memberCommonService.uploadPicture(this.current.pseudo, file).pipe(
-        flatMap(path => this.memberCommonService.confirmPicture(this.current.pseudo, path))
+      this.memberService.uploadPicture(this.current.pseudo, file).pipe(
+        flatMap(path => this.memberService.confirmPicture(this.current.pseudo, path))
       ).subscribe(path => {
         this.updateCounter++;
         this.current.picturePath = path;
-        this.memberCommonService.update_picture_path(this.current.pseudo, path).subscribe();
+        this.memberService.update_picture_path(this.current.pseudo, path).subscribe();
       });
     }
   }
+
   get picturePath(): string {
     // Le compteur updateCounter sert � g�n�rer un URL diff�rent quand on change d'image
     // car sinon l'image ne se rafra�chit pas parce que l'url ne change pas.
@@ -216,45 +182,31 @@ export class HomeComponent implements OnInit {
       (this.current.picturePath + '?' + this.updateCounter) : 'uploads/unknown-user.jpg';
   }
 
-  onChange(val: MatRadioChange) {
-    // console.log(val.value);
-    // const myButton: MatRadioButton = val.source;
-    // console.log(myButton.name);
-    // console.log(myButton.checked);
+  createFilter(): (data: any, filter: string) => boolean {
+    const filterFunction = function (data, filter): boolean {
+      const searchTerms = JSON.parse(filter);
+      return data.member.pseudo.toLowerCase().indexOf(searchTerms.member) !== -1 && (
+        data.book.author.toLowerCase().indexOf(searchTerms.book) !== -1 ||
+        data.book.title.toLowerCase().indexOf(searchTerms.book) !== -1 ||
+        data.book.isbn.toLowerCase().indexOf(searchTerms.book) !== -1 ||
+        data.book.editor.toLowerCase().indexOf(searchTerms.book) !== -1
+      );
 
-    switch (val.value) {
-      case 'open':
-        // code block
-        console.log('on filtre avec open');
-        this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-          console.log(data);
-          return data.returnDate === null;
-
-        };
-        this.dataSourceAdmin.filter = val.value;
-        break;
-      case 'returned':
-        // code block
-        console.log('on filtre avec returned');
-        this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-          console.log(data);
-          return data.returnDate !== null;
-
-        };
-        this.dataSourceAdmin.filter = val.value;
-        break;
-      case 'all':
-        console.log('on filtre avec all');
-        // code block
-        this.dataSourceAdmin.filterPredicate = (data: any, fitlerString: string) => {
-          console.log(data);
-          return data.returnDate !== null || data.returnDate === null;
-
-        };
-        this.dataSourceAdmin.filter = val.value;
-        break;
-      default:
-      // code block
-    }
+    };
+    return filterFunction;
   }
+filterDateAndRadio() {
+    this.dataSourceAdmin.data = this.backup;
+    if (this.radioFilter === 'open') { // open
+      this.dataSourceAdmin.data = _.filter(this.dataSourceAdmin.data, d => d.returnDate === null);
+    } else if (this.radioFilter === 'returned') { // close
+      this.dataSourceAdmin.data = _.filter(this.dataSourceAdmin.data, d => d.returnDate !== null);
+    }
+    if (this.dateFilter !== null) {
+      const date = this.datePipe.transform(this.dateFilter, 'yyyy-MM-dd');
+      this.dataSourceAdmin.data = _.filter(this.dataSourceAdmin.data, d => this.datePipe.transform(d.orderDate, 'yyyy-MM-dd') === date);
+    }
+
+  }
+
 }

@@ -240,10 +240,6 @@ export class BookListComponent implements OnInit {
         const book = new Book({});
         const dlg = this.dialog.open(EditBookComponent, { data: book });
         dlg.beforeClose().subscribe(res => {
-            console.log(res);
-            if (res) {
-                this.dataSource.data = [...this.dataSource.data, res];
-            }
             this.refresh();
         });
     }

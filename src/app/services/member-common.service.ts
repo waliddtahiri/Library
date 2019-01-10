@@ -93,14 +93,21 @@ export class MemberCommonService {
         );
     }
 
-    public rent(currentUser: string, b: Book[] = []): Observable<boolean> {
-        return this.http.post(URL + 'rent', { rentals: b }).pipe(
-            map(result => {
-                return true;
-            }),
+    public delete(m: Member): Observable<boolean> {
+        return this.http.delete<boolean>(URL + m.pseudo).pipe(
             catchError(err => {
                 console.error(err);
                 return of(false);
+            })
+        );
+    }
+
+    public add(m: Member): Observable<Member> {
+        return this.http.post<Member>(URL, m).pipe(
+            map(res => new Member(res)),
+            catchError(err => {
+                console.error(err);
+                return of(null);
             })
         );
     }

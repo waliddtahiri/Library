@@ -1,23 +1,53 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import Member from '../models/member';
-import Rental from '../models/rental';
+import * as multer from 'multer';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as jwt from 'jsonwebtoken';
+
+const UPLOAD_DIR = './uploads/';
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, UPLOAD_DIR);
+    },
+    filename: (req, file, cb) => {
+        const pseudo = req.body.pseudo;
+        cb(null, pseudo + '-' + Date.now());
+    }
+});
+const upload = multer({ storage: storage });
 
 export class MembersRouter {
     public router: Router;
 
     constructor() {
         this.router = Router();
+        this.router.get('/count', this.getCount);
         this.router.get('/', this.getAll);
-        this.router.post('/', this.create);
-        this.router.delete('/', this.deleteAll);
         this.router.get('/:id', this.getOne);
-        this.router.put('/:id', this.update);
-        this.router.delete('/:id', this.deleteOne);
+        this.router.put('/', this.update);
+        this.router.post('/upload', upload.single('picture'), this.upload);
+        this.router.post('/confirm', this.confirm);
+        this.router.post('/cancel', this.cancel);
+        this.router.post('/create', this.create);
+        this.router.put('/:id', this.updateMember);
+    }
+
+    public async getCount(req: Request, res: Response, next: NextFunction) {
+        try {
+            const count = await Member.count({});
+            res.json(count);
+        } catch (err) {
+            res.status(500).send(err);
+        }
     }
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const members = await Member.find().sort({ pseudo: 'asc' });
+            const members = await Member.find()
+                .populate('followers followees')
+                .sort({ pseudo: 'asc' });
             res.json(members);
         } catch (err) {
             res.status(500).send(err);
@@ -33,19 +63,7 @@ export class MembersRouter {
         }
     }
 
-    public async create(req: Request, res: Response, next: NextFunction) {
-        // _id vient avec la valeur nulle d'angular (via reactive forms) => on doit l'enlever pour qu'il reçoive une valeur
-        delete req.body._id;
-        try {
-            const member = new Member(req.body);
-            const newMember = await member.save();
-            res.json(newMember);
-        } catch (err) {
-            res.status(500).send(err);
-        }
-    }
-
-    public async update(req: Request, res: Response, next: NextFunction) {
+    public async updateMember(req: Request, res: Response, next: NextFunction) {
         try {
             const updatedMember = await Member.findOneAndUpdate({ pseudo: req.params.id },
                 req.body,
@@ -56,42 +74,66 @@ export class MembersRouter {
         }
     }
 
-    public async deleteOne(req: Request, res: Response, next: NextFunction) {
-        try {
-            const member = await Member.findOneAndRemove({ pseudo: req.params.id });
-            if (member != null) {
-                res.json(true);
-            } else {
-                res.status(404).json(false);
-            }
-        } catch (err) {
-            res.status(500).send(err);
-        }
+    public async create(req: Request, res: Response, next: NextFunction) {
+        console.log('rentre dans create du routeur');
+        const member = new Member(req.body);
+        const token = jwt.sign({ pseudo: req.body.pseudo }, 'my-super-secret-key', { expiresIn: 60 });
+        member.save()
+            .then(member => res.json({ member: member, success: true, message: 'logged in', token: token }))
+            .catch(err => res.status(500).send(err));
+
     }
 
-    public async deleteAll(req: Request, res: Response, next: NextFunction) {
-        try {
-            const r = await Member.remove({});
-            res.json(true);
-        } catch (err) {
-            res.status(500).send(err);
+    public async update(req: Request, res: Response, next: NextFunction) {
+        if (!req.body.hasOwnProperty('picturePath')) {
+            console.error('No picturePath received');
+            return;
         }
-    }
-
-    public async rent(req: Request, res: Response, next: NextFunction) {
         try {
             const currentUser = req['decoded'].pseudo;
-            const rental = new Rental({ member: currentUser, orderDate: new Date().toLocaleString() });
-            currentUser.rentals.push(rental);
-            const newRental = await rental.save();
-            res.json(newRental);
-            await Promise.all([
-                Member.findByIdAndUpdate(currentUser._id, currentUser),
-                await currentUser.save()
-            ]);
-            res.json(true);
+            const updatedMember = await Member.findOneAndUpdate({ pseudo: currentUser },
+                req.body,
+                { new: true });  // pour renvoyer le document modifi�
+            res.json(updatedMember);
         } catch (err) {
             res.status(500).send(err);
+        }
+    }
+
+
+    public upload(req: Request, res: Response, next: NextFunction) {
+        const file = req['file'];
+        const currentUser = req['decoded'].pseudo;
+        if (file) {
+            const filePath = file.path.replace('\\', '/');
+            res.json(filePath);
+        } else {
+            res.status(500).send('No file received');
+        }
+    }
+
+    public confirm(req: Request, res: Response, next: NextFunction) {
+        const picturePath = req.body.picturePath;
+        const pseudo = req.body.pseudo;
+        if (picturePath) {
+            const filePath = 'uploads/' + pseudo;
+            const src = path.resolve(__dirname + '/../../' + picturePath);
+            const tgt = path.resolve(__dirname + '/../../' + filePath);
+            fs.moveSync(src, tgt, { overwrite: true });
+            res.json(filePath);
+        } else {
+            res.status(500).send('No picturePath received');
+        }
+    }
+
+    public cancel(req: Request, res: Response, next: NextFunction) {
+        const picturePath = req.body.picturePath;
+        if (picturePath) {
+            const src = path.resolve(__dirname + '/../../' + picturePath);
+            fs.removeSync(src);
+            res.json(picturePath);
+        } else {
+            res.status(500).send('No picturePath received');
         }
     }
 }

@@ -16,9 +16,9 @@ export interface IBook extends mongoose.Document {
 
 const bookSchema = new Schema({
     isbn: { type: String, required: true, unique: true },
-    author: { type: String, required: true },
+    author: { type: String },
     title: { type: String, required: true },
-    editor: { type: String, required: true },
+    editor: { type: String},
     picturePath: { type: String },
     categories: [{ type: ObjectId, ref: 'Category' }],
 });

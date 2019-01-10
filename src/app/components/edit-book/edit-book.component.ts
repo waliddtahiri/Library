@@ -19,7 +19,6 @@ import { MemberCommonService } from '../../services/member-common.service';
     selector: 'app-edit-book-mat',
     templateUrl: './edit-book.component.html',
     styleUrls: ['./edit-book.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditBookComponent implements OnInit {
     public frm: FormGroup;
@@ -48,9 +47,9 @@ export class EditBookComponent implements OnInit {
         private bookCommonService: BookCommonService) {
         this.ctlIsbn = this.fb.control('', [Validators.required,
         this.forbiddenValue('abc')], [this.isbnUsed()]);
-        this.ctlAuthor = this.fb.control('', [Validators.required]);
+        this.ctlAuthor = this.fb.control('');
         this.ctlTitle = this.fb.control('', [Validators.required]);
-        this.ctlEditor = this.fb.control('', [Validators.required]);
+        this.ctlEditor = this.fb.control('');
         this.frm = this.fb.group({
             _id: null,
             isbn: this.ctlIsbn,
@@ -107,16 +106,15 @@ export class EditBookComponent implements OnInit {
 
     update() {
         const data = this.frm.value;
-        if(data._id !== undefined){
+        console.log(data);
         data.categories = this.categoriesBook;
-        }
 
         if (this.tempPicturePath && !this.tempPicturePath.endsWith(data.isbn)) {
             this.bookCommonService.confirmPicture(data.isbn, this.tempPicturePath).subscribe();
             data.picturePath = 'uploads/' + data.isbn;
         }
         if (data._id === undefined) {
-            this.bookService.add(data).subscribe(m => data._id = m._id);
+            this.bookService.add(data).subscribe(m => data._id == m._id);
         } else {
             this.bookService.update(data).subscribe();
         }
@@ -211,9 +209,9 @@ export class EditBookComponent implements OnInit {
 
     initTab() {
         // on initialise les tableaux categories
-        if (this.data._id !== undefined) {
-            this.categoryService.getAll().subscribe(cat => {
-                cat.forEach(c => {
+        this.categoryService.getAll().subscribe(cat => {
+            cat.forEach(c => {
+                if (this.data._id !== undefined) {
                     this.data.categories.forEach(c2 => {
                         if (c._id === c2.toString()) {
                             this.categoriesBook.push(c);
@@ -222,9 +220,12 @@ export class EditBookComponent implements OnInit {
                     if (!this.categoriesBook.includes(c)) {
                         this.categoriesSource.push(c);
                     }
-                });
+                }
+                else {
+                        this.categoriesSource = cat;
+                }
             });
-        }
+        });
     }
 }
 

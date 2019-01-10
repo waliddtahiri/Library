@@ -1,13 +1,6 @@
 <div>
     <div style="float:right;" class="welcome">
         <h1>Welcome {{authService.currentUser}}!</h1>
-        <div class="col-sm-12">
-            <img class="img-responsive" [src]="picturePath" width="130px">
-            <br><br>
-        </div>
-        <div class="col-sm-12">
-            <input text-align="right" type="file" (change)="fileChange($event)" placeholder="Upload file" accept=".png,.jpg,.gif">
-        </div>
     </div>
     <br>
     <ng-container *ngIf="!authService.isAdmin">
@@ -38,22 +31,25 @@
         <div>
             <div>Filter by:</div>
             <mat-form-field class="filter">
-                <input matInput (keyup)="memberFilter($event.target.value)" placeholder="Member">
+                <input matInput [formControl]="memberFilter" placeholder="Member">
             </mat-form-field>
             <br>
             <mat-form-field class="filter">
-                <input matInput (keyup)="bookFilter($event.target.value)" placeholder="Book">
+                <input matInput [formControl]="bookFilter" placeholder="Book"> 
             </mat-form-field>
             <br>
             <mat-form-field class="filter">
-                <input matInput (change)="dateFilter($event.target.value)" placeholder="Rental Date" type="date">
+                <<input matInput [matDatepicker]="picker" (dateInput)="dateFilter" [(ngModel)]="dateFilter"
+                    (dateChange)="filterDateAndRadio()" placeholder="Choose a date" [ngModelOptions]="{standalone: true}">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
             <br>
             <label>State : </label>&nbsp;&nbsp;&nbsp;&nbsp;
-            <mat-radio-group name="radioButton" (change)="onChange($event)">
-                <mat-radio-button value="open"> Open </mat-radio-button>&nbsp;
-                <mat-radio-button value="returned"> Returned </mat-radio-button>&nbsp;
-                <mat-radio-button value="all"> All </mat-radio-button>&nbsp;
+            <mat-radio-group (change)="filterDateAndRadio()" [(ngModel)]="radioFilter" [ngModelOptions]="{standalone: true}">
+                <mat-radio-button class="mr-4" value="open"> Open </mat-radio-button>
+                <mat-radio-button class="mr-4" value="returned"> Returned </mat-radio-button>
+                <mat-radio-button class="mr-4" value="all"> All </mat-radio-button>
             </mat-radio-group>
             <br><br>
         </div>

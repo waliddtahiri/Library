@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, ValidationErrors } from '@angular/forms';
+import { FormControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { Inject } from '@angular/core';
@@ -31,15 +31,16 @@ export class SignupComponent {
         this.setMessage();
 
         this.pseudo = this.fb.control('', [Validators.required, Validators.minLength(3),
-        this.forbiddenValue('abc')], );
+        this.forbiddenValue('abc')], [this.pseudoUsed()]);
         this.password = this.fb.control('', [Validators.required, Validators.minLength(3)]);
-        this.confPassword = this.fb.control('', [Validators.required]);
+        this.confPassword = this.fb.control('', [Validators.required], [this.confirmPassword()]);
         this.frm = this.fb.group({
-            // _id: null,
+            _id: null,
             pseudo: this.pseudo,
             password: this.password,
-            confPassword: this.confPassword},
-            { validator: this.confirmPassword,  }
+            confPassword: this.confPassword
+        },
+            { validator: this.confirmPassword, }
 
         );
     }
@@ -61,7 +62,7 @@ export class SignupComponent {
     }
 
     // Validateur asynchrone qui vérifie si le pseudo n'est pas déjà utilisé par un autre membre
-    pseudoUsed(): any {
+    pseudoUsed(): AsyncValidatorFn {
         console.log('Ok je rentre dans pseudoUsed');
         let timeout;
         return (ctl: FormControl) => {
@@ -72,7 +73,8 @@ export class SignupComponent {
                     if (ctl.pristine) {
                         resolve(null);
                     } else {
-                        this.memberCommonService.getOne(pseudo).subscribe(member => {
+                        this.authService.isPseudoAvailable(pseudo).subscribe(member => {
+
                             resolve(member ? { pseudoUsed: true } : null);
                         });
                     }
@@ -80,37 +82,37 @@ export class SignupComponent {
             });
         };
     }
-    confirmPassword(group: FormGroup): ValidationErrors {
+    confirmPassword(): AsyncValidatorFn {
+
+        let timeout;
+        return (ctl: FormControl) => {
+            clearTimeout(timeout);
+            return new Promise(resolve => {
+                timeout = setTimeout(() => {
+                    if (ctl.value === this.password.value) {
+                        return resolve(null);
+
+                    }
+                    return resolve({ passwordConfirm: { currentValue: ctl.value, passwordConfirm: this.password.value } });
+
+                }, 300);
+            });
+        };
 
 
-        const pass = group.controls.password.value;
-        const passConfirm = group.controls.confPassword.value;
-        console.log(pass);
-        console.log(passConfirm);
-        if (pass !== passConfirm) {
-          return ({notSame : true});
-        // return (ctl: FormControl) => {
-        //     if (ctl.value !== this.password) {
-        //         return { forbiddenValue: { currentValue: ctl.value} };
-        //     }
-        //       return null;
-        //  };
-        //  // return ({notSame : false});
-        }
     }
 
     signup() {
-        console.log('ok je rentre');
+        //  console.log('rentre dans signup.component');
 
-        const data = this.frm.value;
+        this.authService.signup(this.frm.value.pseudo, this.frm.value.password).subscribe(() => {
+            if (this.authService.isLoggedIn) {
+                const redirect = this.authService.redirectUrl || '/home';
+                this.authService.redirectUrl = null;
+                this.router.navigate([redirect]);
+            }
+        });
 
-        this.memberService.add(data).subscribe(m => data._id = m._id);
-
-     /*   this.authService.signup(this.pseudo.value , this.password.value).subscribe(() => {
-          // const redirect = this.authService.redirectUrl || '/home';
-          this.router.navigate(['/home']);
-          // console.log("fini l appel de sign up ds signup component ");
-    }); */
     }
 
 }

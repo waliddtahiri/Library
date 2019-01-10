@@ -15,16 +15,14 @@
                     <mat-error class="field-error" *ngIf="ctlIsbn.hasError('forbiddenValue')">Forbidden value 'abc'</mat-error>
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput placeholder="Author" [formControl]="ctlAuthor" required [readonly]="!authService.isAdmin">
-                    <mat-error class="field-error" *ngIf="ctlAuthor.hasError('required')">Required</mat-error>
+                    <input matInput placeholder="Author" [formControl]="ctlAuthor" [readonly]="!authService.isAdmin">
                 </mat-form-field>
                 <mat-form-field>
-                    <input matInput placeholder="Title" [formControl]="ctlTitle" [readonly]="!authService.isAdmin">
+                    <input matInput placeholder="Title" [formControl]="ctlTitle" required [readonly]="!authService.isAdmin">
                     <mat-error class="field-error" *ngIf="ctlTitle.hasError('required')">Required</mat-error>
                 </mat-form-field>
                 <mat-form-field>
                     <input matInput placeholder="Editor" [formControl]="ctlEditor" [readonly]="!authService.isAdmin">
-                    <mat-error class="field-error" *ngIf="ctlEditor.hasError('required')">Required</mat-error>
                 </mat-form-field>
             </div>
         </mat-tab>
